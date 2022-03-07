@@ -12,7 +12,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
 import 'package:meloncloud_flutter_app/model/MenuModel.dart';
-import 'package:meloncloud_flutter_app/page/HomePage.dart';
+import 'package:meloncloud_flutter_app/page/home_page.dart';
 import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
 import 'package:sizer/sizer.dart';
 
@@ -37,20 +37,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-        providers: [
-          BlocProvider<HomeCubit>(create: (context) => HomeCubit()..gallery()),
-        ],
-        child: Portal(
-            child: CupertinoApp(
+      providers: [
+        BlocProvider<HomeCubit>(create: (context) => HomeCubit()..gallery()),
+      ],
+      child: Portal(
+        child: CupertinoApp(
           debugShowCheckedModeBanner: false,
           home: const HomePage(),
           theme: CupertinoThemeData(
-              primaryColor: CupertinoColors.activeBlue,
-              textTheme: CupertinoTextThemeData(
-                tabLabelTextStyle: GoogleFonts.itim(fontSize: 14),
-                navLargeTitleTextStyle: GoogleFonts.itim(fontSize: 38),
-                navTitleTextStyle: GoogleFonts.itim(fontSize: 24),
-              )),
-        )));
+            primaryColor: CupertinoColors.activeBlue,
+            textTheme: CupertinoTextThemeData(
+              tabLabelTextStyle: GoogleFonts.itim(fontSize: 14),
+              navLargeTitleTextStyle: GoogleFonts.itim(fontSize: 38),
+              navTitleTextStyle: GoogleFonts.itim(fontSize: 24),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -2,10 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:meloncloud_flutter_app/cubit/home/home_cubit.dart';
 
 import '../model/MenuModel.dart';
 import '../tools/melon_theme.dart';
+import 'gallery_page.dart';
 
 final GlobalKey<NavigatorState> galleryTabNavKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> fridayTabNavKey = GlobalKey<NavigatorState>();
@@ -32,7 +34,7 @@ class _HomePageState extends State<HomePage> {
     MenuModel(
         icon: CupertinoIcons.photo_on_rectangle,
         activeIcon: CupertinoIcons.photo_fill_on_rectangle_fill,
-        page: new Container(),
+        page: new GalleryPage(),
         title: 'คลังภาพ',
         key: galleryTabNavKey),
     MenuModel(
@@ -70,15 +72,15 @@ class _HomePageState extends State<HomePage> {
 
   void _tabSelected() {
     var currentState = context.read<HomeCubit>().state;
-    if (currentState is HomeLoadedState) {
-      index = _cupertinoTabController.index;
+    print(_cupertinoTabController.index);
+
+    if (currentState is HomeLoadedState || currentState is HomeInitialState) {
+      //index = _cupertinoTabController.index;
       if (index == 0) {
-        context
-            .read<HomeCubit>()
-            .gallery(previousLoadedState: currentState);
+        context.read<HomeCubit>().gallery(previousState: null);
       }
     } else {
-      _cupertinoTabController.index = index;
+      //_cupertinoTabController.index = index;
     }
   }
 
@@ -119,11 +121,8 @@ class _HomePageState extends State<HomePage> {
           tabBuilder: (BuildContext context, index) {
             if (index == 0) {
               return CupertinoPageScaffold(
-                child: Container(
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [],
-                  ),
+                child: GalleryPage(
+                  title: menus[index].title,
                 ),
               );
             }
@@ -138,4 +137,6 @@ class _HomePageState extends State<HomePage> {
           })
     ]);
   }
+
+
 }

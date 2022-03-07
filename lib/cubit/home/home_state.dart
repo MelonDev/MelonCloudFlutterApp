@@ -11,14 +11,30 @@ class HomeLoadingState extends HomeState {
 
 class HomeLoadedState extends HomeState {
   bool isRestoreState;
+  int? previous_page;
+  int current_page;
+  int? next_page;
 
-  HomeLoadedState(HomeChildrenState stackState, {this.isRestoreState = false})
-      : super(stackState);
+  HomeLoadedState(HomeChildrenState childrenState, this.current_page,
+      {this.isRestoreState = false, this.previous_page, this.next_page})
+      : super(childrenState);
+}
+
+class HomeGalleryState extends HomeChildState {
+  List<dynamic>? peoples;
+  Map<dynamic, List<dynamic>> timeline;
+
+  HomeGalleryState(
+      {
+      required this.peoples,
+      required this.timeline,
+      required dynamic data})
+      : super(data: data);
 }
 
 class HomeFailedState extends HomeLoadedState {
   HomeFailedState({required HomeChildrenState childrenState})
-      : super(childrenState);
+      : super(childrenState, -1);
 }
 
 class HomeState extends HomeBaseState {
@@ -34,7 +50,7 @@ class HomeChildState extends HomeBaseState {
 }
 
 class HomeChildrenState {
-  HomeChildState? galleryChildState;
+  HomeGalleryState? galleryChildState;
   HomeChildState? fridayChildState;
   HomeChildState? favoriteChildState;
   HomeChildState? tagChildState;
