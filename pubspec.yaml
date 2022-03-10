@@ -28,6 +28,7 @@ dependencies:
   sizer: ^2.0.15
   flutter_native_splash: ^2.1.0
   routemaster: ^0.9.5
+  auto_size_text: ^3.0.0
 
   flutter_acrylic: ^1.0.0+1
   url_strategy: ^0.2.0

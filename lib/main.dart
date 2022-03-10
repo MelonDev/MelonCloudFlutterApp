@@ -12,6 +12,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:meloncloud_flutter_app/cubit/main/main_cubit.dart';
+import 'package:meloncloud_flutter_app/cubit/peoples/peoples_cubit.dart';
+import 'package:meloncloud_flutter_app/cubit/profile/profile_cubit.dart';
 import 'package:meloncloud_flutter_app/cubit/tweet/tweet_cubit.dart';
 import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
 import 'package:meloncloud_flutter_app/model/MenuModel.dart';
@@ -88,6 +90,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<TweetCubit>(create: (context) => TweetCubit()),
         BlocProvider<MainCubit>(create: (context) => MainCubit()),
+        BlocProvider<PeoplesCubit>(create: (context) => PeoplesCubit()),
+        BlocProvider<ProfileCubit>(create: (context) => ProfileCubit()),
+
       ],
       child: Portal(
         /*

@@ -158,7 +158,7 @@ class _MelonTimelineState extends State<MelonTimeline> {
 
     return CupertinoSliverNavigationBar(
       //padding: EdgeInsetsDirectional.only(top: isMacOS ? 0 :0,start: 20,end: 20),
-      border: Border(bottom: BorderSide(color: _theme.isDark() ? Colors.red : Color.fromARGB(80, 200, 200, 200))),
+      border: Border(bottom: BorderSide(color: _theme.isDark() ? Color.fromARGB(80, 50, 50, 50) : Color.fromARGB(80, 200, 200, 200))),
       backgroundColor: widget.navigationBarColor ??
           (_theme.isDark() ? const Color.fromARGB(0, 25, 25, 25) : const Color.fromARGB(0, 240, 240, 240)).withOpacity(0.7),
       //backgroundColor: Colors.white.withOpacity(0.07),

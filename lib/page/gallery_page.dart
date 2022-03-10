@@ -177,18 +177,8 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
               if (position == state.peoples.length) {
                 return MelonBouncingButton(
                   callback: () {
-                    /*context
-                          .read<PeopleCubit>()
-                          .people(null, forceState: true);
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute<CupertinoPageScaffold>(
-                              builder: (_) => MorePeoplePage(
-                                title: "บุคคล",
-                                fromTitle: widget.title,
-                              )));
+                    Routemaster.of(context).push('/peoples');
 
-                       */
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -237,16 +227,8 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
 
                 return MelonBouncingButton(
                   callback: () {
-                    /*Navigator.push(
-                          context,
-                          CupertinoPageRoute<CupertinoPageScaffold>(
-                              builder: (_) => PeopleDetailPage(
-                                fromTitle: widget.title,
-                                data: state.stackState.gallerySectionState
-                                    .listData[position],
-                              )));
+                    Routemaster.of(context).push("/peoples/${profile['id']}");
 
-                       */
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -276,7 +258,7 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
                                       placeholder: 'assets/preview.png',
                                       fadeInDuration:
                                           Duration(milliseconds: 300),
-                                      image: profile['profile_image'],
+                                      image: _resizeImageProfile(profile['profile_image'])!,
                                       imageErrorBuilder: (BuildContext context,
                                           Object exception,
                                           StackTrace? stackTrace) {
@@ -568,5 +550,19 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
       count += value.length;
     }
     return count;
+  }
+
+  String? _resizeImageProfile(String? orig) {
+    if (orig == null){
+      return null;
+    }
+    int index = orig.lastIndexOf('.');
+    if (index != -1) {
+      String a = orig.substring(0, index);
+      String b = orig.substring(index, orig.length);
+      return "${a}_x96$b";
+    } else {
+      return orig;
+    }
   }
 }

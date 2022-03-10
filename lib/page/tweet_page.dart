@@ -8,6 +8,7 @@ import 'package:meloncloud_flutter_app/cubit/tweet/tweet_cubit.dart';
 import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_popup_menu_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
+import 'package:routemaster/routemaster.dart';
 
 import '../tools/melon_activity_indicator.dart';
 
@@ -559,11 +560,7 @@ class _TweetPageState extends State<TweetPage> {
       width: _width - 32,
       child: MelonBouncingButton(
         callback: () {
-          if (!isFakeLoaded) {
-            //context
-            //    .read<TweetCubit>()
-            //    .openTwitterProfile(state.data['profile']['id']);
-          }
+          Routemaster.of(context).push("/peoples/${state.data['account']['id']}");
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
