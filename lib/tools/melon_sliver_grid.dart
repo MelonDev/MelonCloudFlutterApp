@@ -82,9 +82,11 @@ class _MelonSliverGridState extends State<MelonSliverGrid> {
                         height: _theme.width() * 0.7,
                         color: _theme.backgroundColor().withOpacity(0.8),
                         child: FadeInImage.assetNetwork(
-                          placeholder: _theme.isDark() ? 'assets/white_loading.gif' : 'assets/black_loading.gif',
-                          fadeInDuration: const Duration(milliseconds: 300),
-                          image: widget.listData[position]['url']
+                          placeholder: _theme.isDark()
+                              ? 'assets/white_loading.gif'
+                              : 'assets/black_loading.gif',
+                          fadeInDuration: const Duration(milliseconds: 200),
+                          image: widget.listData[position]['thumbnail']
                               .toString()
                               .replaceAll(":thumb", ":small"),
                           imageErrorBuilder: (BuildContext context,
@@ -153,7 +155,7 @@ class _MelonSliverGridState extends State<MelonSliverGrid> {
     String url = "assets/preview.png";
 
     if (widget.listData[position]['type'] == "PHOTO") {
-      url = widget.listData[position]['url'];
+      url = widget.listData[position]['thumbnail'];
     }
     if (widget.listData[position]['type'] == "VIDEO") {
       url = widget.listData[position]['thumbnail'];
@@ -179,8 +181,10 @@ class _MelonSliverGridState extends State<MelonSliverGrid> {
                 topRight: Radius.circular(position ==
                         (widget.listData.length > 1
                             ? (widget.listData.length >= radio
-                                ? (radio - 1)
-                                : (radio - (radio - 1)))
+                                    ? (radio - 1)
+                                    : widget.listData.length - 1
+                                //: (radio - (radio - 1))
+                                )
                             : 0)
                     ? 24
                     : 6),
@@ -199,8 +203,10 @@ class _MelonSliverGridState extends State<MelonSliverGrid> {
                     ? children
                     : [
                         FadeInImage.assetNetwork(
-                          placeholder: _theme.isDark() ? 'assets/white_loading.gif' : 'assets/black_loading.gif',
-                          fadeInDuration: Duration(milliseconds: 300),
+                          placeholder: _theme.isDark()
+                              ? 'assets/white_loading.gif'
+                              : 'assets/black_loading.gif',
+                          fadeInDuration: Duration(milliseconds: 200),
                           image: url,
                           imageErrorBuilder: (BuildContext context,
                               Object exception, StackTrace? stackTrace) {

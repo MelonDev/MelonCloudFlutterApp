@@ -23,7 +23,7 @@ class MelonPopupMenuButton extends StatefulWidget {
     this.button,
   }) : super(key: key);
 
-  final List<MelonPopupMenuAction>? actions;
+  final List<MelonPopupMenuAction?>? actions;
   final double? width;
   final BorderRadius? borderRadius;
   final double? blurRadius;
@@ -48,6 +48,7 @@ class _MelonPopupMenuButtonState extends State<MelonPopupMenuButton>
   @override
   void initState() {
     super.initState();
+    _orientation = null;
     _animationController = AnimationController(vsync: this);
     _transformAnimation = _animationController
         .drive(
@@ -69,6 +70,8 @@ class _MelonPopupMenuButtonState extends State<MelonPopupMenuButton>
       _close();
     }
     _orientation = orientation;
+
+
   }
 
   @override
@@ -222,7 +225,7 @@ class _MelonPopupMenuButtonState extends State<MelonPopupMenuButton>
               children: widget.actions != null
                   ? widget.actions!.map(
                       (action) {
-                        if(action is MelonPopupMenuButtonAction){
+                        if (action is MelonPopupMenuButtonAction) {
                           return MelonContextMenuAction(
                             child: action.child ??
                                 Text(
@@ -240,14 +243,16 @@ class _MelonPopupMenuButtonState extends State<MelonPopupMenuButton>
                             },
                             trailingIcon: action.trailingIcon,
                           );
-                        }else if(action is MelonPopupMenuSpacingAction){
+                        } else if (action is MelonPopupMenuSpacingAction) {
                           return SizedBox(
-                            height:10,
-                            child: Container(color: _theme.isDark() ? _theme.backgroundColor().withOpacity(0.6) : _theme
-                                .onColor()
-                                .withOpacity(0.05),),
+                            height: 10,
+                            child: Container(
+                              color: _theme.isDark()
+                                  ? _theme.backgroundColor().withOpacity(0.6)
+                                  : _theme.onColor().withOpacity(0.05),
+                            ),
                           );
-                        }else {
+                        } else {
                           return Container();
                         }
                       },
@@ -261,11 +266,13 @@ class _MelonPopupMenuButtonState extends State<MelonPopupMenuButton>
   @override
   Widget build(BuildContext context) {
     _theme = MelonTheme.of(context);
+
     return _outsideArea();
   }
 }
 
 class MelonPopupMenuAction {}
+
 class MelonPopupMenuSpacingAction extends MelonPopupMenuAction {}
 
 class MelonPopupMenuButtonAction extends MelonPopupMenuAction {

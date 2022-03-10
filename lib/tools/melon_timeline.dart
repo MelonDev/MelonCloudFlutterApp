@@ -39,7 +39,7 @@ class MelonTimeline extends StatefulWidget {
   ScrollController? scrollController;
   Widget? leadingWidget;
   Widget? trailingWidget;
-  VoidCallback? titleOnTap;
+  ValueChanged<double>? titleOnTap;
   String? title;
   bool? disableAppbar;
   Color? navigationBarColor;
@@ -120,7 +120,7 @@ class _MelonTimelineState extends State<MelonTimeline> {
     }
 
     return Container(
-      padding: EdgeInsets.only(left: 20, bottom: 0),
+      padding: const EdgeInsets.only(left: 20, bottom: 0),
       //margin: EdgeInsets.only(bottom: 6),
       alignment: Alignment.bottomLeft,
       child: Column(
@@ -128,9 +128,12 @@ class _MelonTimelineState extends State<MelonTimeline> {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            dayInBuddhistCalendarFormat,
-            style: GoogleFonts.itim(color: _theme.textColor(), fontSize: 32),
+          Container(
+            width:200,
+            child: Text(
+              dayInBuddhistCalendarFormat,
+              style: GoogleFonts.itim(color: _theme.textColor(), fontSize: 32),
+            )
           ),
           Text(
             dateInBuddhistCalendarFormat,
@@ -155,9 +158,9 @@ class _MelonTimelineState extends State<MelonTimeline> {
 
     return CupertinoSliverNavigationBar(
       //padding: EdgeInsetsDirectional.only(top: isMacOS ? 0 :0,start: 20,end: 20),
-      border: Border(bottom: BorderSide(color: Colors.transparent)),
+      border: Border(bottom: BorderSide(color: _theme.isDark() ? Colors.red : Color.fromARGB(80, 200, 200, 200))),
       backgroundColor: widget.navigationBarColor ??
-          (_theme.isDark() ? Colors.black : Colors.white).withOpacity(0.7),
+          (_theme.isDark() ? const Color.fromARGB(0, 25, 25, 25) : const Color.fromARGB(0, 240, 240, 240)).withOpacity(0.7),
       //backgroundColor: Colors.white.withOpacity(0.07),
       brightness: _theme.isDark() ? Brightness.dark : Brightness.light,
       //backgroundColor: CupertinoDynamicColor.withBrightness(color: Colors.red, darkColor: Colors.green),
@@ -166,8 +169,12 @@ class _MelonTimelineState extends State<MelonTimeline> {
       largeTitle: MelonBouncingButton(
         isBouncing: true,
         callback: () {
-          widget.scrollController?.animateTo(-100,
-              duration: Duration(milliseconds: 500), curve: Curves.linear);
+          if (widget.titleOnTap != null){
+            widget.titleOnTap?.call(widget.scrollController!.offset);
+          }else {
+            widget.scrollController?.animateTo(-100,
+                duration: Duration(milliseconds: 500), curve: Curves.linear);
+          }
         },
         child: Text(
           widget.title ?? "",

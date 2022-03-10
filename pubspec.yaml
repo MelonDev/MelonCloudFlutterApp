@@ -13,6 +13,8 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.4
+  ionicons: ^0.1.2
+  async: ^2.8.2
   flutter_dotenv: ^5.0.2
   bloc: ^8.0.3
   flutter_bloc: ^8.0.1
@@ -24,8 +26,14 @@ dependencies:
   flutter_portal: ^0.4.0
   dart_extensions_methods: ^2.0.0
   sizer: ^2.0.15
+  flutter_native_splash: ^2.1.0
+  routemaster: ^0.9.5
 
   flutter_acrylic: ^1.0.0+1
+  url_strategy: ^0.2.0
+
+  fluent_ui: ^3.9.1
+
 
 
 
