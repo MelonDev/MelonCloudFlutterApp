@@ -22,6 +22,7 @@ class MainCubit extends Cubit<MainState> {
   MainCubit() : super(MainInitialState());
 
   gallery({MainHomeState? previousState, String? command}) async {
+    print("GALLERY $command}");
     emit(MainHomeLoadingState(previousState: previousState));
 
     Map<String, String> targets = {
@@ -67,6 +68,7 @@ class MainCubit extends Cubit<MainState> {
   }
 
   event({MainEventState? previousState, String? command}) async {
+    print("EVENT $command");
     emit(MainEventLoadingState(previousState: previousState));
 
     Map<String, String> targets = {

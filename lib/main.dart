@@ -57,14 +57,15 @@ final routes = RouteMap(
             child: Container(
           color: Colors.purple,
         )),
-    '/tweets/:id': (info) => CupertinoPage(
+    '/tweets/:id': (route) => CupertinoPage(
             child: TweetPage(
-          tweetid: info.pathParameters['id']!,
+          tweetid: route.pathParameters['id']!,
         )),
-    '/peoples': (route) => const CupertinoPage(
-        child: PeoplesPage()),
-    '/peoples/:id': (route) => const CupertinoPage(
-        child: ProfilePage()),
+    '/peoples': (route) => const CupertinoPage(child: PeoplesPage()),
+    '/profile/:id': (route) => CupertinoPage(
+            child: ProfilePage(
+          account: route.pathParameters['id']!,
+        )),
   },
 );
 
@@ -92,7 +93,6 @@ class MyApp extends StatelessWidget {
         BlocProvider<MainCubit>(create: (context) => MainCubit()),
         BlocProvider<PeoplesCubit>(create: (context) => PeoplesCubit()),
         BlocProvider<ProfileCubit>(create: (context) => ProfileCubit()),
-
       ],
       child: Portal(
         /*

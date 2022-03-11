@@ -31,8 +31,8 @@ class PeoplesCubit extends Cubit<PeoplesBaseState> {
 
     HttpResponse response = await http_get(uri);
     if (response.statusCode == 200) {
-      dynamic response_data = response.data['data'];
-      List<dynamic> data = (response_data as List);
+      dynamic responseData = response.data['data'];
+      List<dynamic> data = (responseData as List);
 
       dynamic timestamp = response.data['timestamp'];
       List<dynamic> timeline =

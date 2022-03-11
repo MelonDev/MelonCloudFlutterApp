@@ -33,8 +33,10 @@ class _EventPageState extends State<EventPage> {
   void didChangeDependencies() {
     _theme = MelonTheme.of(context);
     var state = context.read<MainCubit>().state;
+    //print(state);
     if (!(state is MainEventLoadingState || state is MainEventState)) {
-      context.read<MainCubit>().event();
+      //print("Z");
+      //context.read<MainCubit>().event();
     }
     super.didChangeDependencies();
   }
@@ -153,6 +155,7 @@ class _EventPageState extends State<EventPage> {
                                 previousState:
                                     state is MainEventState ? state : null);
                             Navigator.of(context).pop();
+
                           }),
                       CupertinoDialogAction(
                           child: const Text("ยกเลิก"),

@@ -10,6 +10,7 @@ import 'package:meloncloud_flutter_app/tools/melon_timeline.dart';
 import 'package:routemaster/routemaster.dart';
 
 import '../tools/melon_theme.dart';
+import '../tools/on_hover.dart';
 
 class GalleryPage extends StatefulWidget {
   GalleryPage({Key? key}) : super(key: key);
@@ -18,8 +19,8 @@ class GalleryPage extends StatefulWidget {
   _GalleryPageState createState() => _GalleryPageState();
 }
 
-class _GalleryPageState extends State<GalleryPage> with
-AutomaticKeepAliveClientMixin<GalleryPage> {
+class _GalleryPageState extends State<GalleryPage>
+    with AutomaticKeepAliveClientMixin<GalleryPage> {
   MelonThemeData? _theme;
   ScrollController? _contentsScrollController;
   ScrollController? _peoplesScrollController;
@@ -41,23 +42,25 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
     _theme = MelonTheme.of(context);
 
     var state = context.read<MainCubit>().state;
-    if(!(state is MainHomeLoadingState || state is MainHomeState)){
+    //print(state);
+    if (state is MainInitialState) {
       context.read<MainCubit>().gallery();
+    }
+    if (!(state is MainHomeLoadingState || state is MainHomeState)) {
+      //print("A");
+      //context.read<MainCubit>().gallery(command:"A");
     }
     super.didChangeDependencies();
   }
-
 
   @override
   void deactivate() {
     super.deactivate();
   }
 
-
   @override
   void dispose() {
     super.dispose();
-
   }
 
   void _handleOverScroll() {
@@ -67,12 +70,11 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
       //print(pixels >= _scrollController.position.maxScrollExtent);
 
       if (state is MainHomeState) {
-        int step =
-        (_calculateHeight(state.timeline) /
-            50)
-            .round();
+        int step = (_calculateHeight(state.timeline) / 50).round();
         if (step > 0) {
-          context.read<MainCubit>().gallery(previousState:state,command: "NEXT");
+          context
+              .read<MainCubit>()
+              .gallery(previousState: state, command: "NEXT");
         }
       }
     }
@@ -80,8 +82,6 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return BlocBuilder<MainCubit, MainState>(builder: (context, state) {
       return Stack(
         children: [_layout(state), _loading(state)],
@@ -96,8 +96,8 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
     if (state is MainHomeState) {
       data = state.timeline;
     }
-    if (state is MainHomeLoadingState){
-      if (state.previousState != null){
+    if (state is MainHomeLoadingState) {
+      if (state.previousState != null) {
         data = state.previousState!.timeline;
       }
     }
@@ -137,7 +137,7 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
               return Container(
                 decoration: BoxDecoration(
                     color: _theme?.textColor().withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16)),
+                    borderRadius: BorderRadius.circular(24)),
                 width: 120,
                 margin: const EdgeInsets.only(right: 10),
                 padding: const EdgeInsets.only(left: 10, right: 10),
@@ -174,180 +174,197 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
                 ),
               );
             } else if (state is MainHomeState) {
-              if (position == state.peoples.length) {
-                return MelonBouncingButton(
-                  callback: () {
-                    Routemaster.of(context).push('/peoples');
-
+              if (position == 0) {
+                return OnHover(
+                  builder: (bool isHovered) {
+                    return MelonBouncingButton(
+                      callback: () {
+                        Routemaster.of(context).push('/peoples');
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: _theme?.textColor().withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(24)),
+                        width: 120,
+                        margin: const EdgeInsets.only(right: 10),
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                                height: 70,
+                                width: 70,
+                                decoration: BoxDecoration(
+                                    color: _theme!.textColor().withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(70)),
+                                child: Center(
+                                  child: Icon(
+                                    Ionicons.apps,
+                                    size: 42,
+                                    color: _theme!.textColor(),
+                                  ),
+                                )),
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            Text(
+                              "ทั้งหมด",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.itim(
+                                  fontSize: 18,
+                                  color: _theme!.textColor()),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
                   },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: _theme?.textColor().withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(24)),
-                    width: 120,
-                    margin: const EdgeInsets.only(right: 10),
-                    padding: const EdgeInsets.only(left: 10, right: 10),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                            height: 70,
-                            width: 70,
-                            decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.9),
-                                borderRadius: BorderRadius.circular(70)),
-                            child: Center(
-                              child: Icon(
-                                CupertinoIcons.arrow_right,
-                                size: 36,
-                                color: Colors.black.withOpacity(0.8),
-                              ),
-                            )),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        Text(
-                          "เพิ่มเติม",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.itim(
-                              fontSize: 18,
-                              color: Colors.white.withOpacity(0.9)),
-                        ),
-                      ],
-                    ),
-                  ),
                 );
               } else {
-                dynamic data = state.peoples[position];
+                dynamic data = state.peoples[position - 1];
                 dynamic profile = data['profile'];
                 dynamic value = data['count'];
 
-                return MelonBouncingButton(
-                  callback: () {
-                    Routemaster.of(context).push("/peoples/${profile['id']}");
+                return OnHover(
+                  builder: (bool isHovered) {
+                    return MelonBouncingButton(
+                      callback: () {
+                        Routemaster.of(context)
+                            .push("/profile/${profile['id']}");
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: _theme?.textColor().withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(24)),
+                        width: 120,
+                        margin: const EdgeInsets.only(right: 6),
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Container(
+                              height: 70,
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  Align(
+                                    alignment: Alignment.topCenter,
+                                    child: Container(
+                                      height: 70,
+                                      width: 70,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(60),
+                                        child: FadeInImage.assetNetwork(
+                                          placeholder: 'assets/preview.png',
+                                          fadeInDuration:
+                                              Duration(milliseconds: 300),
+                                          image: _resizeImageProfile(
+                                              profile['image'])!,
+                                          imageErrorBuilder:
+                                              (BuildContext context,
+                                                  Object exception,
+                                                  StackTrace? stackTrace) {
+                                            //errorMap[position] = true;
 
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: _theme?.textColor().withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(24)),
-                    width: 120,
-                    margin: const EdgeInsets.only(right: 6),
-                    padding: const EdgeInsets.only(left: 10, right: 10),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          height: 70,
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              Align(
-                                alignment: Alignment.topCenter,
-                                child: Container(
-                                  height: 70,
-                                  width: 70,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(60),
-                                    child: FadeInImage.assetNetwork(
-                                      placeholder: 'assets/preview.png',
-                                      fadeInDuration:
-                                          Duration(milliseconds: 300),
-                                      image: _resizeImageProfile(profile['profile_image'])!,
-                                      imageErrorBuilder: (BuildContext context,
-                                          Object exception,
-                                          StackTrace? stackTrace) {
-                                        //errorMap[position] = true;
-
-                                        return Container(
-                                          color: _theme!
-                                              .onColor()
-                                              .withOpacity(0.2),
-                                          width:
-                                              MediaQuery.of(context).size.width,
-                                          height: MediaQuery.of(context)
-                                              .size
-                                              .height,
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.max,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                CupertinoIcons.xmark_seal_fill,
-                                                color: _theme?.textColor(),
-                                                size: 50,
+                                            return Container(
+                                              color: _theme!
+                                                  .onColor()
+                                                  .withOpacity(0.2),
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: MediaQuery.of(context)
+                                                  .size
+                                                  .height,
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    CupertinoIcons
+                                                        .xmark_seal_fill,
+                                                    color: _theme?.textColor(),
+                                                    size: 50,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Text(
+                                                    "ไม่พบข้อมูล",
+                                                    style: GoogleFonts.itim(
+                                                        color: _theme
+                                                            ?.textColor()),
+                                                  )
+                                                ],
                                               ),
-                                              const SizedBox(
-                                                height: 10,
-                                              ),
-                                              Text(
-                                                "ไม่พบข้อมูล",
-                                                style: GoogleFonts.itim(
-                                                    color: _theme?.textColor()),
-                                              )
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                      fit: BoxFit.cover,
+                                            );
+                                          },
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
+                                  Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: Container(
+                                      padding: const EdgeInsets.only(
+                                          left: 10,
+                                          right: 10,
+                                          top: 4,
+                                          bottom: 4),
+                                      decoration: BoxDecoration(
+                                          color: CupertinoColors.systemYellow
+                                              .withOpacity(0.9),
+                                          borderRadius:
+                                              BorderRadius.circular(16)),
+                                      child: Text(
+                                        "$value",
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.itim(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Colors.black.withOpacity(0.8)),
+                                      ),
+                                    ),
+                                  )
+                                ],
                               ),
-                              Align(
-                                alignment: Alignment.bottomRight,
-                                child: Container(
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 10, top: 4, bottom: 4),
-                                  decoration: BoxDecoration(
-                                      color: CupertinoColors.systemYellow
-                                          .withOpacity(0.9),
-                                      borderRadius: BorderRadius.circular(16)),
-                                  child: Text(
-                                    "$value",
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: GoogleFonts.itim(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black.withOpacity(0.8)),
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text(
+                              profile['name'] ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.itim(
+                                  fontSize: 18,
+                                  color: _theme?.textColor().withOpacity(0.9)),
+                            ),
+                            const SizedBox(
+                              height: 4,
+                            ),
+                            Text(
+                              "@${profile['screen_name']}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.itim(
+                                  fontSize: 16,
+                                  color: _theme?.textColor().withOpacity(0.9)),
+                            ),
+                          ],
                         ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          profile['name'] ?? "",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.itim(
-                              fontSize: 18,
-                              color: _theme?.textColor().withOpacity(0.9)),
-                        ),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          "@${profile['screen_name']}",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.itim(
-                              fontSize: 16,
-                              color: _theme?.textColor().withOpacity(0.9)),
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 );
               }
             } else {
@@ -366,7 +383,7 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
 
   Widget _loading(state) {
     if (state is MainHomeLoadingState) {
-      if (state.previousState == null){
+      if (state.previousState == null) {
         return Align(
           alignment: Alignment.center,
           child: SizedBox(
@@ -385,13 +402,14 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
                 Text(
                   "กำลังโหลด..",
                   style: GoogleFonts.itim(
-                      fontSize: 24, color: _theme?.textColor().withOpacity(0.9)),
+                      fontSize: 24,
+                      color: _theme?.textColor().withOpacity(0.9)),
                 )
               ],
             ),
           ),
         );
-      }else {
+      } else {
         return Container();
       }
     } else {
@@ -403,7 +421,6 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
     return Container(
       child: MelonBouncingButton(
         callback: () {
-
           if (state is MainHomeState) {
             _scrollToTop(state);
             context.read<MainCubit>().gallery();
@@ -422,7 +439,8 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
                           isDestructiveAction: true,
                           onPressed: () {
                             context.read<MainCubit>().gallery(
-                                previousState: state is MainHomeState ? state : null);
+                                previousState:
+                                    state is MainHomeState ? state : null);
                             Navigator.of(context).pop();
                           }),
                       CupertinoDialogAction(
@@ -437,94 +455,104 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
           }
         },
         isBouncing: state is! MainHomeLoadingState,
-        child: Container(
-          width: state is MainHomeLoadingState ? 130 : 80,
-          height: 32,
-          decoration: BoxDecoration(
-              color: state is MainHomeLoadingState
-                  ? CupertinoTheme.of(context).primaryColor.withOpacity(0.8)
-                  : _theme?.onColor().withOpacity(0.1),
-              borderRadius: BorderRadius.circular(30)),
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    state is MainHomeLoadingState
-                        ? CupertinoTheme(
-                            data: CupertinoTheme.of(context).copyWith(),
-                            child: const MelonActivityIndicator())
-                        : Container(),
-                    SizedBox(
-                      width: state is MainHomeLoadingState ? 6 : 0,
+        child: OnHover(
+          disableScale: true,
+          builder: (isHovered) {
+            return Container(
+              width: state is MainHomeLoadingState ? 130 : 80,
+              height: 32,
+              decoration: BoxDecoration(
+                  color: state is MainHomeLoadingState
+                      ? CupertinoTheme.of(context).primaryColor.withOpacity(0.8)
+                      : _theme!.onButtonColor(isHovered),
+                  borderRadius: BorderRadius.circular(30)),
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        state is MainHomeLoadingState
+                            ? CupertinoTheme(
+                                data: CupertinoTheme.of(context).copyWith(),
+                                child: const MelonActivityIndicator())
+                            : Container(),
+                        SizedBox(
+                          width: state is MainHomeLoadingState ? 6 : 0,
+                        ),
+                        Text(
+                          state is MainHomeLoadingState
+                              ? 'กำลังโหลด..'
+                              : 'รีเฟรช',
+                          style: GoogleFonts.itim(
+                              color: state is MainHomeLoadingState
+                                  ? Colors.white
+                                  : _theme?.onColor()),
+                        )
+                      ],
                     ),
-                    Text(
-                      state is MainHomeLoadingState ? 'กำลังโหลด..' : 'รีเฟรช',
-                      style: GoogleFonts.itim(
-                          color: state is MainHomeLoadingState
-                              ? Colors.white
-                              : _theme?.onColor()),
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
+                  )
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
   }
 
   Widget _leading(state) {
-    return Container(
-      child: MelonBouncingButton(
-        callback: () {
-          if (state is MainHomeState) {
-            Routemaster.of(context).push('/home');
-          }
-        },
-        isBouncing: true,
-        child: Container(
-          width: 100,
-          height: 32,
-          decoration: BoxDecoration(
-              color: _theme?.onColor().withOpacity(0.1),
-              borderRadius: BorderRadius.circular(30)),
-          child: Stack(
-            children: [
-              Align(
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 30,
-                      width: 30,
-                      child: Icon(
-                        Ionicons.images_outline,
-                        size: 18,
-                        color: _theme?.onColor(),
+    return OnHover(
+      disableScale: true,
+      builder: (isHovered) {
+        return MelonBouncingButton(
+          callback: () {
+            if (state is MainHomeState) {
+              Routemaster.of(context).push('/home');
+            }
+          },
+          isBouncing: true,
+          child: Container(
+            width: 100,
+            height: 32,
+            decoration: BoxDecoration(
+                color: _theme!.onButtonColor(isHovered),
+                borderRadius: BorderRadius.circular(30)),
+            child: Stack(
+              children: [
+                Align(
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        height: 30,
+                        width: 30,
+                        child: Icon(
+                          Ionicons.images_outline,
+                          size: 18,
+                          color: _theme?.onColor(),
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 2,
-                    ),
-                    Text(
-                      'อัลบั้ม',
-                      style: GoogleFonts.itim(color: _theme?.onColor()),
-                    ),
-                    const SizedBox(
-                      width: 6,
-                    ),
-                  ],
-                ),
-              )
-            ],
+                      const SizedBox(
+                        width: 2,
+                      ),
+                      Text(
+                        'อัลบั้ม',
+                        style: GoogleFonts.itim(color: _theme?.onColor()),
+                      ),
+                      const SizedBox(
+                        width: 6,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -553,7 +581,7 @@ AutomaticKeepAliveClientMixin<GalleryPage> {
   }
 
   String? _resizeImageProfile(String? orig) {
-    if (orig == null){
+    if (orig == null) {
       return null;
     }
     int index = orig.lastIndexOf('.');

@@ -57,7 +57,7 @@ class _TweetPageState extends State<TweetPage> {
                 trailing: _loadingChip(state),
                 leading: MelonBouncingButton(
                   callback: () {
-                    Navigator.of(context).pop();
+                    Routemaster.of(context).pop();
                   },
                   child: Container(
                     child: Row(
@@ -489,8 +489,8 @@ class _TweetPageState extends State<TweetPage> {
                                     alignment: Alignment.bottomLeft,
                                     child: Container(
                                       margin:
-                                          EdgeInsets.only(left: 8, bottom: 8),
-                                      child: Icon(
+                                          const EdgeInsets.only(left: 8, bottom: 8),
+                                      child: const Icon(
                                         CupertinoIcons.videocam_circle_fill,
                                         color: Colors.white,
                                         size: 48,
@@ -560,7 +560,7 @@ class _TweetPageState extends State<TweetPage> {
       width: _width - 32,
       child: MelonBouncingButton(
         callback: () {
-          Routemaster.of(context).push("/peoples/${state.data['account']['id']}");
+          Routemaster.of(context).push("/profile/${state.data['account']['id']}");
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -572,7 +572,7 @@ class _TweetPageState extends State<TweetPage> {
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(70.0),
                   child: Image.network(
-                    state.data['account']['profile_image'].toString(),
+                    state.data['account']['image'].toString(),
                     fit: BoxFit.cover,
                   )),
             ),

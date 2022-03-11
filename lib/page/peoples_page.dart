@@ -12,6 +12,8 @@ import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
 import 'package:routemaster/routemaster.dart';
 
 import '../cubit/peoples/peoples_cubit.dart';
+import '../tools/melon_back_button.dart';
+import '../tools/melon_refresh_button.dart';
 
 class PeoplesPage extends StatefulWidget {
   const PeoplesPage({Key? key}) : super(key: key);
@@ -22,10 +24,6 @@ class PeoplesPage extends StatefulWidget {
 
 class _PeoplesPageState extends State<PeoplesPage> {
   ScrollController? _scrollController;
-  bool shouldLoadMore = true;
-
-  bool forceState = false;
-
   MelonThemeData? _theme;
 
   @override
@@ -65,101 +63,50 @@ class _PeoplesPageState extends State<PeoplesPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<PeoplesCubit, PeoplesBaseState>(
         builder: (context, state) {
-      return Container(
-          color: _theme!.backgroundColor(),
-          child: SafeArea(
-              top: false,
-              bottom: false,
-              child: Stack(
-                children: [
-                  MelonTemplate(
-                    title: "รายชื่อทั้งหมด",
-                    titleOnTap: () {
-                      _scrollController!.animateTo(-100,
-                          duration: Duration(milliseconds: 500), curve: Curves.linear);
-                    },
-                    trailingWidget: Container(
-                      child: MelonBouncingButton(
-                        callback: () {
-                          if (state is PeoplesState) {
-                            context.read<PeoplesCubit>().load();
-                          }
-                        },
-                        isBouncing: state is! PeoplesLoadingState,
-                        child: Container(
-                          width: state is PeoplesLoadingState ? 130 : 80,
-                          height: 32,
-                          decoration: BoxDecoration(
-                              color: state is PeoplesLoadingState
-                                  ? CupertinoTheme.of(context)
-                                      .primaryColor
-                                      .withOpacity(0.8)
-                                  : _theme!.onColor().withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Stack(
-                            children: [
-                              Align(
-                                alignment: Alignment.center,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    state is PeoplesLoadingState
-                                        ? CupertinoTheme(
-                                            data: CupertinoTheme.of(context)
-                                                .copyWith(),
-                                            child:
-                                                const MelonActivityIndicator())
-                                        : Container(),
-                                    SizedBox(
-                                      width:
-                                          state is PeoplesLoadingState ? 6 : 0,
-                                    ),
-                                    Text(
-                                      state is PeoplesLoadingState
-                                          ? 'กำลังโหลด..'
-                                          : 'รีเฟรช',
-                                      style: GoogleFonts.itim(
-                                          color: state is PeoplesLoadingState
-                                              ? Colors.white
-                                              : _theme!.onColor()),
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    leadingWidget: MelonBouncingButton(
-                      callback: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Container(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              CupertinoIcons.back,
-                              color: _theme!.textColor(),
-                            ),
-                            Text(
-                              "กลับ",
-                              style: GoogleFonts.itim(
-                                  color: _theme!.textColor(), fontSize: 18),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    scrollController: _scrollController,
-                    sliverLayout: _sliverHub(state),
-                  ),
-                  _loading(state)
-                ],
-              )));
+      if (state is PeoplesState || state is PeoplesLoadingState) {
+        return Stack(
+          children: [_timeline(state), _loading(state)],
+        );
+      } else {
+        return Container();
+      }
     });
+  }
+
+  Widget _timeline(state) {
+    List<dynamic> data = [];
+
+    if (state is PeoplesState) {
+      data = state.timeline;
+    }
+    if (state is PeoplesLoadingState) {
+      if (state.previousState != null) {
+        data = state.previousState!.timeline;
+      }
+    }
+    return Container(
+        color: _theme!.backgroundColor(),
+        child: SafeArea(
+            top: false,
+            bottom: false,
+            child: MelonTemplate(
+              title: "รายชื่อทั้งหมด",
+              titleOnTap: () {
+                _scrollController!.animateTo(-100,
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.linear);
+              },
+              trailingWidget: MelonRefreshButton(
+                  isLoading: state is PeoplesLoadingState,
+                  callback: () {
+                    if (state is PeoplesState) {
+                      context.read<PeoplesCubit>().load();
+                    }
+                  }),
+              leadingWidget: MelonBackButton(),
+              scrollController: _scrollController,
+              sliverLayout: _sliverHub(state),
+            )));
   }
 
   Widget _loading(state) {
@@ -205,7 +152,6 @@ class _PeoplesPageState extends State<PeoplesPage> {
       if (state.previousState != null) {
         List<dynamic> data = state.previousState!.timeline;
         return _availableState(data);
-
       } else {
         return MelonLoadingSliverGrid();
       }
@@ -241,13 +187,13 @@ class _PeoplesPageState extends State<PeoplesPage> {
       fixWidth: 200,
       topPadding: 12,
       gridTapping: (data) {
-        Routemaster.of(context).push("/peoples/${data['profile']['id']}");
+        Routemaster.of(context).push("/profile/${data['profile']['id']}");
       },
       children: (int position) {
         dynamic profile = timeline[position]['profile'];
         int count = timeline[position]['count'];
         return [
-          _imageBackground(profile['profile_banner']),
+          _imageBackground(profile['banner']),
           Container(
             color: _theme!
                 .backgroundColor()
@@ -260,7 +206,7 @@ class _PeoplesPageState extends State<PeoplesPage> {
   }
 
   Widget _profile(data, int value) {
-    String? profile_image = _resizeImageProfile(data['profile_image']);
+    String? profile_image = _resizeImageProfile(data['image']);
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
