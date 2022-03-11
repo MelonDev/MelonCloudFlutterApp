@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -242,7 +243,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(
                     height: 4,
                   ),
-                  Text(
+                  AutoSizeText(
                     "@${profile['screen_name']}",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -253,10 +254,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(
                     height: 4,
                   ),
-                  Text(
+                  AutoSizeText(
                     "จำนวน ${profile['stats']['tweets'] +
                         profile['stats']['mentions']} ทวีต (ตนเอง: ${profile['stats']['tweets']}, ถูกกล่าวถึง: ${profile['stats']['mentions']})",
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.itim(
                         fontSize: 24,
@@ -463,9 +464,9 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 Row(
                   children: [
-                    const Icon(
+                     Icon(
                       CupertinoIcons.number,
-                      color: Colors.white,
+                      color: _theme!.textColor(),
                       size: 20,
                     ),
                     Container(
@@ -473,7 +474,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     Text(
                       title,
-                      style: GoogleFonts.itim(color: Colors.white, fontSize: 18),
+                      style: GoogleFonts.itim(color: _theme!.textColor(), fontSize: 18),
                     )
                   ],
                 ),
@@ -482,7 +483,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 Text(
                   "จำนวน $count ทวีต",
-                  style: GoogleFonts.itim(color: Colors.white, fontSize: 14),
+                  style: GoogleFonts.itim(color: _theme!.textColor(), fontSize: 14),
                 )
               ],
             ),
