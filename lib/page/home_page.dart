@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:routemaster/routemaster.dart';
 
 import '../cubit/main/main_cubit.dart';
@@ -63,12 +64,16 @@ class _HomePageState extends State<HomePage> {
 
   void selecting() {
     int currentIndex = _tabState.controller.index;
+
+/*
     if (currentIndex == 0) {
-      context.read<MainCubit>().gallery();
+      context.read<MainCubit>().gallery(context:context);
     }
     if (currentIndex == 1) {
-      context.read<MainCubit>().event();
+      context.read<MainCubit>().event(context:context);
     }
+
+ */
   }
 
   Widget cupertinoTabView(MenuModel model) {

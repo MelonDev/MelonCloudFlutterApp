@@ -6,7 +6,7 @@ import 'melon_theme.dart';
 
 class MelonContextMenuAction extends StatefulWidget {
   const MelonContextMenuAction({
-    @required Key? key,
+    Key? key,
     @required this.child,
     this.isDefaultAction = false,
     this.isDestructiveAction = false,
@@ -90,7 +90,7 @@ class _MelonContextMenuActionState extends State<MelonContextMenuAction> {
             decoration: BoxDecoration(
               color: _isPressed
                   ? (widget.backgroundColorPressed ??
-                      _theme.onColor().withOpacity(0.3))
+                      _theme.onColor().withOpacity(0.2))
                   : widget.backgroundColor,
               border: Border(
                 bottom: BorderSide(

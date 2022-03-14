@@ -31,8 +31,8 @@ class _OnHoverState extends State<OnHover> {
   Widget build(BuildContext context) {
     //final hovered = Matrix4.identity()..translate(0,-10,0);
     final hovered = Matrix4.identity()
-      ..translate(widget.x ?? 5.0, widget.y ?? 6.0, 0.0)
-      ..scale(widget.z ?? 0.92, widget.z ?? 0.92);
+      ..translate((widget.x ?? 5.0).toDouble(), (widget.y ?? 6.0).toDouble(), 0.0)
+      ..scale((widget.z ?? 0.92).toDouble(), (widget.z ?? 0.92).toDouble());
     final transform = isHovered
         ? (widget.disableScale ? Matrix4.identity() : hovered)
         : Matrix4.identity();

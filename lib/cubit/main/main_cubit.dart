@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:bloc/bloc.dart';
+import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meta/meta.dart';
 import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
 
@@ -21,8 +23,7 @@ class MainCubit extends Cubit<MainState> {
 
   MainCubit() : super(MainInitialState());
 
-  gallery({MainHomeState? previousState, String? command}) async {
-    print("GALLERY $command}");
+  gallery({required BuildContext context,MainHomeState? previousState, String? command}) async {
     emit(MainHomeLoadingState(previousState: previousState));
 
     Map<String, String> targets = {
@@ -62,20 +63,22 @@ class MainCubit extends Cubit<MainState> {
         nextPage: fabric['next_page'],
       );
       emit(state);
+      MelonRouter.push_async(context: context, path: '/home');
     } else {
       emit(MainHomeFailureState(previousState: previousState));
     }
   }
 
-  event({MainEventState? previousState, String? command}) async {
-    print("EVENT $command");
+  event({required BuildContext context, MainEventState? previousState, String? command}) async {
     emit(MainEventLoadingState(previousState: previousState));
 
     Map<String, String> targets = {
       "quality": "ORIG",
       "type": "ALL",
       "hashtag": "FursuitFriday",
-      "limit": "150"
+      "limit": "150",
+    "me_like": "false",
+
     };
 
     if (command != null && previousState != null) {
@@ -102,6 +105,7 @@ class MainCubit extends Cubit<MainState> {
         nextPage: fabric['next_page'],
       );
       emit(state);
+      MelonRouter.push_async(context: context, path: '/events');
     } else {
       emit(MainEventFailureState(previousState: previousState));
     }

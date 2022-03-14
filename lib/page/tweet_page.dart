@@ -5,12 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:meloncloud_flutter_app/cubit/tweet/tweet_cubit.dart';
+import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
+import 'package:meloncloud_flutter_app/tools/melon_back_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_popup_menu_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
+import 'package:meloncloud_flutter_app/tools/on_hover.dart';
 import 'package:routemaster/routemaster.dart';
 
 import '../tools/melon_activity_indicator.dart';
+import '../tools/melon_refresh_button.dart';
 
 class TweetPage extends StatefulWidget {
   const TweetPage({Key? key, required this.tweetid}) : super(key: key);
@@ -32,7 +36,7 @@ class _TweetPageState extends State<TweetPage> {
     if (MediaQuery.of(context).size.width >= 900) {
       _width = 390.0;
     } else if (MediaQuery.of(context).size.width >= 500) {
-      _width = 560.0;
+      _width = 500.0;
     } else {
       _width = MediaQuery.of(context).size.width;
     }
@@ -54,120 +58,34 @@ class _TweetPageState extends State<TweetPage> {
                 border:
                     const Border(bottom: BorderSide(color: Colors.transparent)),
                 backgroundColor: _theme.barColor(),
-                trailing: _loadingChip(state),
-                leading: MelonBouncingButton(
-                  callback: () {
-                    Routemaster.of(context).pop();
-                  },
-                  child: Container(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          CupertinoIcons.back,
-                          color: disable ? Colors.white : _theme.textColor(),
-                        ),
-                        Text(
-                          "กลับ",
-                          style: GoogleFonts.itim(
-                              color:
-                                  disable ? Colors.white : _theme.textColor(),
-                              fontSize: 18),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
+                trailing: _trailing(state),
+                leading: MelonBackButton(),
               ),
               child: Container(
                   color: _theme.backgroundColor(), child: _area(state)),
             ),
-            isActiveBlurNavigationBar
-                ? Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      height: MediaQuery.of(context).padding.bottom,
-                      width: MediaQuery.of(context).size.width,
-                      child: ClipRect(
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
-                          child: Container(
-                            color: Colors.black.withOpacity(0.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                : Container()
           ],
         ),
       );
     });
   }
 
-  Widget _loadingChip(state) {
+  Widget _trailing(state) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          child: MelonBouncingButton(
+        MelonRefreshButton(
+            isLoading: state is LoadingTweetState,
             callback: () {
               if (state is LoadedTweetState) {
                 context.read<TweetCubit>().load(widget.tweetid);
               }
-            },
-            isBouncing: !(state is LoadingTweetState),
-            child: Container(
-              width: state is LoadingTweetState ? 130 : (disable ? 110 : 80),
-              height: 32,
-              decoration: BoxDecoration(
-                  color: (state is LoadingTweetState
-                      ? (CupertinoTheme.of(context)
-                          .primaryColor
-                          .withOpacity(0.8))
-                      : (disable
-                          ? CupertinoColors.systemRed.withOpacity(0.8)
-                          : _theme.textColor().withOpacity(0.1))),
-                  borderRadius: BorderRadius.circular(30)),
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        state is LoadingTweetState
-                            ? CupertinoTheme(
-                                data: CupertinoTheme.of(context).copyWith(),
-                                child: const MelonActivityIndicator())
-                            : Container(),
-                        SizedBox(
-                          width: state is LoadingTweetState ? 6 : 0,
-                        ),
-                        Text(
-                          state is LoadingTweetState
-                              ? 'กำลังโหลด..'
-                              : (disable ? "ไม่พบข้อมูล" : 'รีเฟรช'),
-                          style: GoogleFonts.itim(
-                              color: state is LoadingTweetState
-                                  ? Colors.white
-                                  : _theme.textColor()),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
-        ),
+            }),
         disable
             ? Container()
-            : SizedBox(
+            : const SizedBox(
                 width: 10,
               ),
-        //_cupertinoMenu(),
         disable
             ? Container()
             : IgnorePointer(
@@ -234,7 +152,7 @@ class _TweetPageState extends State<TweetPage> {
       return _dataArea(state);
     } else if (state is LoadingTweetState) {
       if (state.previousState != null) {
-        return _dataArea(state.previousState!, isFakeLoaded: true);
+        return _dataArea(state.previousState!);
       } else {
         return disable
             ? _error()
@@ -275,7 +193,7 @@ class _TweetPageState extends State<TweetPage> {
     }
   }
 
-  Widget _dataArea(LoadedTweetState state, {bool isFakeLoaded = false}) {
+  Widget _dataArea(LoadedTweetState state) {
     Size appbarSize = const CupertinoNavigationBar().preferredSize;
     double statusBarHeight = MediaQuery.of(context).padding.top;
     double navigationBarHeight = MediaQuery.of(context).padding.bottom;
@@ -295,7 +213,7 @@ class _TweetPageState extends State<TweetPage> {
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [_layout(state, isFakeLoaded: isFakeLoaded)],
+                  children: [_layout(state)],
                 )),
           ));
     } else {
@@ -344,7 +262,7 @@ class _TweetPageState extends State<TweetPage> {
     );
   }
 
-  Widget _layout(LoadedTweetState state, {bool isFakeLoaded = false}) {
+  Widget _layout(LoadedTweetState state) {
     if (MediaQuery.of(context).size.width > 900) {
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -355,14 +273,19 @@ class _TweetPageState extends State<TweetPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
+
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _profileWidget(state, isFakeLoaded: isFakeLoaded),
-                    _currentStatusWidget(state, isFakeLoaded: isFakeLoaded),
+                    _profileWidget(state),
+                    _currentStatusWidget(state),
+                    SizedBox(
+                      height: (26).toDouble(),
+                    ),
+                    _tagGroupWidget(state),
                     _isEnableMessage(state)
-                        ? _titleWidget("ข้อความ")
+                        ? _titleWidget("ข้อความ", marginTop: 0)
                         : Container(),
                     _isEnableMessage(state)
                         ? _langGroupWidget(state)
@@ -370,37 +293,77 @@ class _TweetPageState extends State<TweetPage> {
                   ],
                 ),
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _titleWidget("รูปภาพ"),
-                  _langPhotoWidget(state, isFakeLoaded: isFakeLoaded),
-                ],
-              ),
+              Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _titleWidget("รูปภาพ"),
+                      _photoWidget(state),
+                    ],
+                  )),
             ],
           ),
           SizedBox(
             height: (40).toDouble(),
           ),
-          _tagGroupWidget(state),
         ],
       );
+    } else if (MediaQuery.of(context).size.width > 600) {
+      return Container(
+          child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _profileWidget(state),
+                _currentStatusWidget(state),
+                _titleWidget("รูปภาพ"),
+                _photoWidget(state),
+                SizedBox(
+                  height: (26).toDouble(),
+                ),
+                _tagGroupWidget(state),
+                _isEnableMessage(state)
+                    ? _titleWidget("ข้อความ", marginTop: 0)
+                    : Container(),
+                _isEnableMessage(state) ? _langGroupWidget(state) : Container(),
+                SizedBox(
+                  height: (40).toDouble(),
+                ),
+              ],
+            )
+          ]));
     } else {
       return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _profileWidget(state, isFakeLoaded: isFakeLoaded),
-          _currentStatusWidget(state, isFakeLoaded: isFakeLoaded),
+          _profileWidget(state),
+          _currentStatusWidget(state),
           _titleWidget("รูปภาพ"),
-          _langPhotoWidget(state, isFakeLoaded: isFakeLoaded),
-          _isEnableMessage(state) ? _titleWidget("ข้อความ") : Container(),
+          _photoWidget(state),
+          SizedBox(
+            height: (26).toDouble(),
+          ),
+          _tagGroupWidget(state),
+          _isEnableMessage(state)
+              ? _titleWidget("ข้อความ", marginTop: 0)
+              : Container(),
           _isEnableMessage(state) ? _langGroupWidget(state) : Container(),
           SizedBox(
             height: (40).toDouble(),
           ),
-          _tagGroupWidget(state),
         ],
       );
     }
@@ -408,104 +371,147 @@ class _TweetPageState extends State<TweetPage> {
 
   bool _isEnableMessage(LoadedTweetState state) {
     if (state.data['message'] != null) {
-      return _removeTrashInText(state.data['message'].toString())
-              .length >
-          0;
+      return _removeTrashInText(state.data['message'].toString()).length > 0;
     } else {
       return false;
     }
   }
 
-  Widget _langPhotoWidget(LoadedTweetState state, {bool isFakeLoaded = false}) {
-    List<dynamic>? photo =
-        state.data['media']['photos'] as List<dynamic>?;
-    List<dynamic>? video =
-        state.data['media']['videos'] as List<dynamic>?;
+  Widget _photoWidget(LoadedTweetState state) {
+    List<dynamic>? photos = state.data['media']['photos'] as List<dynamic>?;
+    dynamic? videos = state.data['media']['videos'];
+    dynamic? thumbnail = state.data['media']['thumbnail'];
 
-    int len = photo != null ? photo.length : (video != null ? 1 : 0);
+    List<dynamic>? items = photos ?? (videos != null ? [thumbnail] : []);
+    int len = items.length;
 
     return len > 0
         ? Container(
-            padding: EdgeInsets.only(bottom: 10),
-            margin: EdgeInsets.only(top: 20),
+            padding: const EdgeInsets.only(bottom: 10),
+            margin: const EdgeInsets.only(top: 20),
             width: MediaQuery.of(context).size.width >= 900
                 ? MediaQuery.of(context).size.width - _width - 40
                 : _width,
             height: MediaQuery.of(context).size.width > 900
                 ? _width * 1.1
                 : _width * 0.6,
-            child: ListView.builder(
-              padding: EdgeInsets.only(left: 16, right: 16),
-              shrinkWrap: true,
-              physics: BouncingScrollPhysics(),
-              itemBuilder: (sContext, sPosition) {
-                return MelonBouncingButton(
-                  callback: () {
-                    if (!isFakeLoaded) {}
+            child: ScrollConfiguration(
+                behavior:
+                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: ListView.builder(
+                  padding:
+                      const EdgeInsets.only(left: 16, right: 16, bottom: 0),
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (sContext, sPosition) {
+                    return OnHover(
+                      x: 5,
+                      y: 10,
+                      builder: (bool isHovered) {
+                        return MelonBouncingButton(
+                          callback: () {
+                            if (photos != null) {
+                              String photosString = photos.join('@');
+                              String positionString = sPosition.toString();
+                              Map<String, String> queryParameters = {
+                                "photos": photosString,
+                                "position": positionString
+                              };
+                              MelonRouter.push(
+                                  context: context,
+                                  path: "/preview",
+                                  queryParameters: queryParameters);
 
-                    if (state.data['media']['videos'] == null) {
-                      /*Navigator.push(
-                    context,
-                    CupertinoPageRoute<CupertinoPageScaffold>(
-                        builder: (_) => PicturePreviewPage(
-                          "ทวีต",
-                          photos: photo,
-                          initialPage: sPosition,
-                        )));
-
-                 */
-                    }
-
-                    //"thumb, small, medium, large, orig"
-
-/*
-              Navigator.of(context, rootNavigator: true)
-                  .push(_createRoute(PicturePreview(
-                galleryItems: _convertToListString(photo),
-                initialPage: sPosition,
-              )));
-
-               */
+                            }
+                          },
+                          child: Hero(
+                              tag: items[sPosition],
+                              child: Container(
+                                margin: EdgeInsets.only(right: 8),
+                                width: MediaQuery.of(context).size.width > 900
+                                    ? _width * 0.7
+                                    : _width * 0.45,
+                                height: MediaQuery.of(context).size.width > 900
+                                    ? _width * 1.1
+                                    : _width * 0.6,
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(16.0),
+                                    child: Stack(
+                                      fit: StackFit.expand,
+                                      children: [
+                                        FadeInImage.assetNetwork(
+                                          placeholder: _theme.isDark()
+                                              ? 'assets/white_loading.gif'
+                                              : 'assets/black_loading.gif',
+                                          fadeInDuration:
+                                              const Duration(milliseconds: 200),
+                                          image:
+                                              "${items[sPosition]}${photos != null ? ':small' : ''}",
+                                          imageErrorBuilder:
+                                              (BuildContext context,
+                                                  Object exception,
+                                                  StackTrace? stackTrace) {
+                                            return Container(
+                                              color: _theme
+                                                  .onColor()
+                                                  .withOpacity(0.2),
+                                              width: MediaQuery.of(context)
+                                                  .size
+                                                  .width,
+                                              height: MediaQuery.of(context)
+                                                  .size
+                                                  .height,
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.max,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    CupertinoIcons
+                                                        .xmark_seal_fill,
+                                                    color: _theme.textColor(),
+                                                    size: 50,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 10,
+                                                  ),
+                                                  Text(
+                                                    "ไม่พบข้อมูล",
+                                                    style: GoogleFonts.itim(
+                                                        color:
+                                                            _theme.textColor()),
+                                                  )
+                                                ],
+                                              ),
+                                            );
+                                          },
+                                          fit: BoxFit.cover,
+                                        ),
+                                        videos != null
+                                            ? Align(
+                                                alignment: Alignment.bottomLeft,
+                                                child: Container(
+                                                  margin: const EdgeInsets.only(
+                                                      left: 8, bottom: 8),
+                                                  child: const Icon(
+                                                    CupertinoIcons
+                                                        .videocam_circle_fill,
+                                                    color: Colors.white,
+                                                    size: 48,
+                                                  ),
+                                                ),
+                                              )
+                                            : Container()
+                                      ],
+                                    )),
+                              )),
+                        );
+                      },
+                    );
                   },
-                  child: Container(
-                    margin: EdgeInsets.only(right: 8),
-                    width: MediaQuery.of(context).size.width > 900
-                        ? _width * 0.7
-                        : _width * 0.45,
-                    height: MediaQuery.of(context).size.width > 900
-                        ? _width * 1.1
-                        : _width * 0.6,
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16.0),
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Image.network(
-                              "${photo != null ? photo[sPosition] : state.data['media']['thumbnail']}:small",
-                              fit: BoxFit.cover,
-                            ),
-                            video != null
-                                ? Align(
-                                    alignment: Alignment.bottomLeft,
-                                    child: Container(
-                                      margin:
-                                          const EdgeInsets.only(left: 8, bottom: 8),
-                                      child: const Icon(
-                                        CupertinoIcons.videocam_circle_fill,
-                                        color: Colors.white,
-                                        size: 48,
-                                      ),
-                                    ),
-                                  )
-                                : Container()
-                          ],
-                        )),
-                  ),
-                );
-              },
-              itemCount: len,
-              scrollDirection: Axis.horizontal,
-            ),
+                  itemCount: len,
+                  scrollDirection: Axis.horizontal,
+                )),
           )
         : Container();
   }
@@ -516,8 +522,7 @@ class _TweetPageState extends State<TweetPage> {
     if (state.data["translate"] != null) {
       String _originalText = state.data['language'].contains("zh")
           ? state.data['message'].toString()
-          : state.data["translate"]["${state.data['language']}"]
-              .toString();
+          : state.data["translate"]["${state.data['language']}"].toString();
 
       String _zuText = state.data["translate"]["zu"].toString();
 
@@ -525,11 +530,10 @@ class _TweetPageState extends State<TweetPage> {
       //print(state.data["translate"]);
 
       if (_originalText != "null") {
-        _listWidget
-            .add(_langWidget(_originalText, state.data['language']));
+        _listWidget.add(_langWidget(_originalText, state.data['language']));
       } else {
-        _listWidget.add(_langWidget(
-            state.data['message'], state.data['language']));
+        _listWidget
+            .add(_langWidget(state.data['message'], state.data['language']));
       }
 
       if (_zuText != null) {
@@ -540,8 +544,8 @@ class _TweetPageState extends State<TweetPage> {
       }
     } else {
       //String _originalText = state.data['tweet']['message'].toString();
-      _listWidget.add(_langWidget(
-          state.data['message'], state.data['language']));
+      _listWidget
+          .add(_langWidget(state.data['message'], state.data['language']));
     }
 
     return Container(
@@ -554,63 +558,79 @@ class _TweetPageState extends State<TweetPage> {
     );
   }
 
-  Widget _profileWidget(LoadedTweetState state, {bool isFakeLoaded = false}) {
+  Widget _profileWidget(LoadedTweetState state) {
     return Container(
-      margin: EdgeInsets.only(left: 16, right: 16),
+      margin: const EdgeInsets.only(left: 16, right: 16),
       width: _width - 32,
-      child: MelonBouncingButton(
-        callback: () {
-          Routemaster.of(context).push("/profile/${state.data['account']['id']}");
-        },
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: EdgeInsets.all(0),
-              height: 56,
-              width: 56,
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(70.0),
-                  child: Image.network(
-                    state.data['account']['image'].toString(),
-                    fit: BoxFit.cover,
-                  )),
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    state.data['account']['name'],
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.itim(
-                        fontSize: 20,
-                        color: _theme.textColor(),
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    state.data['account']['location'],
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.itim(
-                        fontSize: 16,
-                        color: _theme.textColor().withOpacity(0.8),
-                        fontWeight: FontWeight.normal),
-                  ),
-                ],
+      child: OnHover(
+        builder: (bool isHovered) {
+          return Container(
+              padding: const EdgeInsets.only(
+                  left: 16, right: 16, top: 10, bottom: 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: isHovered
+                    ? _theme.textColor().withOpacity(0.1)
+                    : Colors.transparent,
               ),
-            )
-          ],
-        ),
+              child: MelonBouncingButton(
+                callback: () {
+                  //Routemaster.of(context)
+                  //    .push("/profile/${state.data['account']['id']}");
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.all(0),
+                      height: 56,
+                      width: 56,
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(70.0),
+                          child: Image.network(
+                            state.data['account']['image'].toString(),
+                            fit: BoxFit.cover,
+                          )),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            state.data['account']['name'],
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.itim(
+                                fontSize: 20,
+                                color: _theme.textColor(),
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            "@${state.data['account']['screen_name']}${state.data['account']['location'].length != 0 ? '\n' : ''}${state.data['account']['location']}",
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.itim(
+                                fontSize: 16,
+                                color: _theme.textColor().withOpacity(0.8),
+                                fontWeight: FontWeight.normal),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ));
+        },
       ),
     );
   }
 
-  Widget _currentStatusWidget(LoadedTweetState state,
-      {bool isFakeLoaded = false}) {
+  Widget _currentStatusWidget(LoadedTweetState state) {
     bool memories = state.data['memories'] ?? false;
+
+    print("WIDTH: $_width");
 
     return Container(
       height: 70,
@@ -619,53 +639,91 @@ class _TweetPageState extends State<TweetPage> {
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
-          _statusWidget(
-              (state.data['current']['favorite_count'] ?? "").toString(),
-              "ชื่นชอบ",
-              memories, callback: () {
-            if (!isFakeLoaded) {
-              if (memories) {
-                //UNLIKE
-                /*context
+          OnHover(
+            x: 5,
+            y: 3,
+            builder: (bool isHovered) {
+              return _statusWidget(
+                (state.data['current']['favorite_count'] ?? "").toString(),
+                "ชื่นชอบ",
+                memories,
+                isHovered: isHovered,
+                callback: () {
+                  if (memories) {
+                    //UNLIKE
+                    /*context
                     .read<TweetDetailCubit>()
                     .unlikeTweet(state, state.data['tweet']['id']);
 
                  */
-              } else {
-                //context
-                //    .read<TweetCubit>()
-                //    .likeTweet(state, state.data['tweet']['id']);
-              }
-            }
-          }, isEnable: memories, colorWhenEnable: CupertinoColors.systemPink),
-          !memories ? _wallWidget() : Container(),
-          _statusWidget(
-              (state.data['current']['retweet_count'] ?? "").toString(),
-              "รีทวีต",
-              memories,
-              callback: () {}),
-          _wallWidget(),
-          !memories
-              ? _statusWidget(null, "บันทึก", memories,
-                  overrideIcon: CupertinoIcons.tray_arrow_down, callback: () {
-                  if (!isFakeLoaded) {
+                  } else {
                     //context
                     //    .read<TweetCubit>()
-                    //    .secretLikeTweet(state, state.data['tweet']['id']);
+                    //    .likeTweet(state, state.data['tweet']['id']);
                   }
-                })
+                },
+                isEnable: memories,
+                colorWhenEnable: isHovered
+                    ? const Color.fromARGB(255, 228, 46, 80)
+                    : const Color.fromARGB(255, 255, 46, 85),
+              );
+            },
+          ),
+          !memories ? _wallWidget() : Container(),
+          OnHover(
+            x: 5,
+            y: 3,
+            builder: (isHovered) {
+              return _statusWidget(
+                  (state.data['current']['retweet_count'] ?? "").toString(),
+                  "รีทวีต",
+                  memories,
+                  isHovered: isHovered,
+                  callback: () {});
+            },
+          ),
+          _wallWidget(),
+          !memories
+              ? OnHover(
+                  x: 5,
+                  y: 3,
+                  builder: (bool isHovered) {
+                    return _statusWidget(
+                      null,
+                      "บันทึก",
+                      memories,
+                      overrideIcon: CupertinoIcons.tray_arrow_down,
+                      isHovered: isHovered,
+                      callback: () {
+                        //context
+                        //    .read<TweetCubit>()
+                        //    .secretLikeTweet(state, state.data['tweet']['id']);
+                      },
+                    );
+                  },
+                )
               : Container(),
           !memories ? _wallWidget() : Container(),
 
           //_statusWidget((state.data['current']['source'] ?? "").toString(),"tweet from",overrideFontSize: 24)
-          _statusWidget(null, "เปิดในแอป", memories,
-              overrideIcon: CupertinoIcons.rocket, callback: () {
-            if (!isFakeLoaded) {
-              //context
-              //    .read<TweetCubit>()
-              //    .openTweet(state.data['tweet']['id']);
-            }
-          })
+          OnHover(
+            x: 5,
+            y: 3,
+            builder: (bool isHovered) {
+              return _statusWidget(
+                null,
+                "เปิดในแอป",
+                memories,
+                overrideIcon: CupertinoIcons.rocket,
+                isHovered: isHovered,
+                callback: () {
+                  //context
+                  //    .read<TweetCubit>()
+                  //    .openTweet(state.data['tweet']['id']);
+                },
+              );
+            },
+          )
         ],
       ),
     );
@@ -675,7 +733,7 @@ class _TweetPageState extends State<TweetPage> {
     return Container(
       width: 2,
       height: 64,
-      color: _theme.onColor().withOpacity(0.2),
+      color: _theme.onColor().withOpacity(0.1),
     );
   }
 
@@ -685,16 +743,22 @@ class _TweetPageState extends State<TweetPage> {
       IconData? overrideIcon,
       VoidCallback? callback,
       Color? colorWhenEnable,
+      bool isHovered = false,
       bool isEnable = false}) {
     return MelonBouncingButton(
       callback: callback,
       isBouncing: callback != null,
       child: Container(
-        width:
-            _statusWidgetWidth(forceMarginRight, enableFour: !forceMarginRight),
-        height: 70,
+        width: _statusWidgetWidth(forceMarginRight,
+                enableFour: !forceMarginRight) -
+            3,
+        height: 76,
         decoration: BoxDecoration(
-            color: isEnable ? colorWhenEnable : _theme.backgroundColor(),
+            color: isEnable
+                ? colorWhenEnable
+                : (isHovered
+                    ? _theme.textColor().withOpacity(0.1)
+                    : _theme.backgroundColor()),
             borderRadius: BorderRadius.circular(10)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -796,50 +860,63 @@ class _TweetPageState extends State<TweetPage> {
   }
 
   Widget _chipTagWidget(String title, Color color, IconData iconData) {
-    return MelonBouncingButton(
-      callback: () {
-        /*Navigator.push(
+    return OnHover(
+      builder: (bool isHovered) {
+        return MelonBouncingButton(
+          callback: () {
+            /*Navigator.push(
             context,
             CupertinoPageRoute<CupertinoPageScaffold>(
                 builder: (_) => HashtagDetailPage(
                     fromTitle: "ทวีต", hashtag: {"name": title})));
 
          */
+          },
+          child: Container(
+            decoration: BoxDecoration(
+                color: _theme.isDark()
+                    ? const Color(0x5c487be3)
+                    : const Color(0xffe0e5ec),
+                borderRadius: const BorderRadius.all(Radius.circular(40))),
+            margin: const EdgeInsets.only(left: 0, bottom: 0, right: 6),
+            padding:
+                const EdgeInsets.only(left: 18, bottom: 6, right: 18, top: 6),
+            child: Row(
+              children: [
+                Icon(
+                  iconData,
+                  color: _theme.isDark()
+                      ? const Color(0xffdde2ec)
+                      : const Color(0xff4e6179),
+                  size: 20,
+                ),
+                Container(
+                  width: 6,
+                ),
+                Text(
+                  title,
+                  style: GoogleFonts.itim(
+                      color: _theme.isDark()
+                          ? const Color(0xffdde2ec)
+                          : const Color(0xff4e6179),
+                      fontSize: 18),
+                )
+              ],
+            ),
+          ),
+        );
       },
-      child: Container(
-        decoration: BoxDecoration(
-            color: color,
-            borderRadius: const BorderRadius.all(Radius.circular(40))),
-        margin: const EdgeInsets.only(left: 0, bottom: 0, right: 6),
-        padding: const EdgeInsets.only(left: 18, bottom: 6, right: 18, top: 6),
-        child: Row(
-          children: [
-            Icon(
-              iconData,
-              color: Colors.white,
-              size: 20,
-            ),
-            Container(
-              width: 6,
-            ),
-            Text(
-              title,
-              style: GoogleFonts.itim(color: Colors.white, fontSize: 18),
-            )
-          ],
-        ),
-      ),
     );
   }
 
-  Widget _titleWidget(String text) {
+  Widget _titleWidget(String text, {double marginTop = 26.0}) {
     return Container(
       margin: EdgeInsets.only(left: 20, right: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: 26,
+            height: marginTop,
           ),
           Text(
             text,
@@ -859,8 +936,10 @@ class _TweetPageState extends State<TweetPage> {
 
     if (state.data['hashtags'] != null) {
       for (dynamic i in state.data['hashtags']) {
-        widgets.add(_chipTagWidget(i.toString(),
-            Colors.blueAccent.withAlpha(150), CupertinoIcons.number));
+        widgets.add(_chipTagWidget(
+            i.toString(),
+            CupertinoColors.systemBlue.withOpacity(0.1),
+            CupertinoIcons.number));
       }
     }
 

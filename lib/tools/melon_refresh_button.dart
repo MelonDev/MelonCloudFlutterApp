@@ -18,7 +18,10 @@ class MelonRefreshButton extends StatelessWidget {
   Widget build(BuildContext context) {
     _theme = MelonTheme.of(context);
     return OnHover(
-      disableScale: true,
+      x: 6.0,
+      y: 3.0,
+      z: 0.84,
+      disableScale: false,
       builder: (isHovered) {
         return MelonBouncingButton(
           callback: callback,

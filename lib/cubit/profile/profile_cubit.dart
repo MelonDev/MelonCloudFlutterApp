@@ -19,7 +19,6 @@ class ProfileCubit extends Cubit<ProfileBaseState> {
       {ProfileState? previousState,
       required String account,
       String? command}) async {
-    print("PROFILE LOAD");
     emit(ProfileLoadingState(previousState: previousState));
 
     Map<String, String> targets = {

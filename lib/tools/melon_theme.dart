@@ -6,7 +6,7 @@ class MelonThemeData {
   late Brightness _brightness;
   late MediaQueryData _mediaQuery;
 
-  bool isDark() => _brightness == Brightness.dark;
+  bool isDark({Brightness? brightness}) => (brightness ?? _brightness) == Brightness.dark;
 
   Size size() => _mediaQuery.size;
 
@@ -16,30 +16,34 @@ class MelonThemeData {
 
   Orientation orientation() => _mediaQuery.orientation;
 
-  Color backgroundColor() => isDark() ? Colors.black : Colors.white;
+  Color backgroundColor({Brightness? brightness}) => isDark(brightness: brightness) ? Colors.black : Colors.white;
 
-  Color onColor() => isDark() ? Colors.white : Colors.black;
+  Color onColor({Brightness? brightness}) => isDark(brightness: brightness) ? Colors.white : Colors.black;
 
-  Color onButtonColor(bool? isHovered) {
+  Color onButtonColor(bool? isHovered,{Brightness? brightness}) {
     if (isHovered == null) {
-      return onColor().withOpacity(0.1);
+      return onColor(brightness: brightness).withOpacity(0.1);
     } else {
-      return isHovered ? onColor().withOpacity(0.3) : onColor().withOpacity(0.1);
+      return isHovered ? onColor(brightness: brightness).withOpacity(0.2) : onColor(brightness: brightness).withOpacity(0.1);
     }
   }
 
-  Color onBackButtonColor(bool? isHovered) {
+  Color onBackButtonColor(bool? isHovered,{Brightness? brightness}) {
     if (isHovered == null) {
       return Colors.transparent;
     } else {
-      return isHovered ? onColor().withOpacity(0.2) : Colors.transparent;
+      return isHovered ? onColor(brightness: brightness).withOpacity(0.2) : Colors.transparent;
     }
   }
 
 
   Color barColor() => backgroundColor().withOpacity(0.7);
 
-  Color textColor() => isDark() ? Colors.white : Colors.black.withOpacity(0.8);
+  Color textColor({Brightness? brightness}) => isDark(brightness: brightness) ? Colors.white : Colors.black.withOpacity(0.8);
+
+  Color popButtonColor({Brightness? brightness}) => isDark(brightness: brightness) ? Colors.white.withOpacity(0.2) : Colors.white.withOpacity(1.0);
+  Color popButtonShadowColor({Brightness? brightness}) => isDark(brightness: brightness) ? Colors.white.withOpacity(0.0) : Colors.black.withOpacity(0.2);
+
 
   MelonThemeData of(BuildContext context) {
     _mediaQuery = MediaQuery.of(context);

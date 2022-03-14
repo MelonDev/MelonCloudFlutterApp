@@ -70,6 +70,11 @@ class _MelonSliverGridState extends State<MelonSliverGrid> {
       sliver: SliverGrid(
         delegate: SliverChildBuilderDelegate(
           (context, position) {
+            String tag = widget.listData[position]['thumbnail']
+                .toString();
+            String url = widget.listData[position]['thumbnail']
+                .toString()
+                .replaceAll(":thumb", ":small");
             if (widget.longActions != null) {
               return CupertinoContextMenu(
                 actions: widget.longActions!.call(widget.listData[position]),
@@ -78,49 +83,50 @@ class _MelonSliverGridState extends State<MelonSliverGrid> {
                     filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: Container(
-                        width: _theme.width(),
-                        height: _theme.width() * 0.7,
-                        color: _theme.backgroundColor().withOpacity(0.8),
-                        child: FadeInImage.assetNetwork(
-                          placeholder: _theme.isDark()
-                              ? 'assets/white_loading.gif'
-                              : 'assets/black_loading.gif',
-                          fadeInDuration: const Duration(milliseconds: 200),
-                          image: widget.listData[position]['thumbnail']
-                              .toString()
-                              .replaceAll(":thumb", ":small"),
-                          imageErrorBuilder: (BuildContext context,
-                              Object exception, StackTrace? stackTrace) {
-                            errorMap[position] = true;
+                      child: Hero(
+                        tag: tag,
+                        child: Container(
+                          width: _theme.width(),
+                          height: _theme.width() * 0.7,
+                          color: _theme.backgroundColor().withOpacity(0.8),
+                          child: FadeInImage.assetNetwork(
+                            placeholder: _theme.isDark()
+                                ? 'assets/white_loading.gif'
+                                : 'assets/black_loading.gif',
+                            fadeInDuration: const Duration(milliseconds: 200),
+                            image: url,
+                            imageErrorBuilder: (BuildContext context,
+                                Object exception, StackTrace? stackTrace) {
+                              errorMap[position] = true;
 
-                            return Container(
-                              color: _theme.onColor().withOpacity(0.2),
-                              width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.height,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    CupertinoIcons.xmark_seal_fill,
-                                    color: _theme.textColor(),
-                                    size: 50,
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "ไม่พบข้อมูล",
-                                    style: GoogleFonts.itim(
-                                        color: _theme.textColor()),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                          fit: BoxFit.cover,
-                        ),
+                              return Container(
+                                color: _theme.onColor().withOpacity(0.2),
+                                width: MediaQuery.of(context).size.width,
+                                height: MediaQuery.of(context).size.height,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      CupertinoIcons.xmark_seal_fill,
+                                      color: _theme.textColor(),
+                                      size: 50,
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      "ไม่พบข้อมูล",
+                                      style: GoogleFonts.itim(
+                                          color: _theme.textColor()),
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                            fit: BoxFit.cover,
+                          ),
+                        )
                       ),
                     ),
                   );

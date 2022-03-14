@@ -3,9 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meloncloud_flutter_app/tools/melon_activity_indicator.dart';
 import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_loading_sliver_grid.dart';
+import 'package:meloncloud_flutter_app/tools/melon_loading_widget.dart';
 import 'package:meloncloud_flutter_app/tools/melon_sliver_grid.dart';
 import 'package:meloncloud_flutter_app/tools/melon_template.dart';
 import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
@@ -112,31 +114,7 @@ class _PeoplesPageState extends State<PeoplesPage> {
   Widget _loading(state) {
     if (state is PeoplesLoadingState) {
       if (state.previousState == null) {
-        return Align(
-          alignment: Alignment.center,
-          child: Container(
-            width: 150,
-            height: 150,
-            child: Column(
-              children: [
-                Icon(
-                  CupertinoIcons.cloud,
-                  size: 100,
-                  color: _theme!.textColor().withOpacity(0.9),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "กำลังโหลด..",
-                  style: GoogleFonts.itim(
-                      fontSize: 24,
-                      color: _theme!.textColor().withOpacity(0.9)),
-                )
-              ],
-            ),
-          ),
-        );
+        return const MelonLoadingWidget();
       } else {
         return Container();
       }
@@ -187,7 +165,7 @@ class _PeoplesPageState extends State<PeoplesPage> {
       fixWidth: 200,
       topPadding: 12,
       gridTapping: (data) {
-        Routemaster.of(context).push("/profile/${data['profile']['id']}");
+        MelonRouter.push(context: context, path:"/profile/${data['profile']['id']}");
       },
       children: (int position) {
         dynamic profile = timeline[position]['profile'];

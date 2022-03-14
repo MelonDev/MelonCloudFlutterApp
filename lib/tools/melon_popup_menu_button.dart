@@ -9,6 +9,7 @@ import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
 
 import 'melon_context_menu_action.dart';
+import 'on_hover.dart';
 
 class MelonPopupMenuButton extends StatefulWidget {
   MelonPopupMenuButton({
@@ -52,26 +53,27 @@ class _MelonPopupMenuButtonState extends State<MelonPopupMenuButton>
     _animationController = AnimationController(vsync: this);
     _transformAnimation = _animationController
         .drive(
-          CurveTween(curve: Curves.easeOutQuint),
-        )
+      CurveTween(curve: Curves.easeOutQuint),
+    )
         .drive(
-          Matrix4Tween(
-            begin: Matrix4.identity()..scale(0.01, 0.01),
-            end: Matrix4.identity(),
-          ),
-        );
+      Matrix4Tween(
+        begin: Matrix4.identity()
+          ..scale(0.01, 0.01),
+        end: Matrix4.identity(),
+      ),
+    );
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final orientation = MediaQuery.of(context).orientation;
+    final orientation = MediaQuery
+        .of(context)
+        .orientation;
     if (_orientation != null && _orientation != orientation) {
       _close();
     }
     _orientation = orientation;
-
-
   }
 
   @override
@@ -152,40 +154,51 @@ class _MelonPopupMenuButtonState extends State<MelonPopupMenuButton>
     }
   }
 
-  MelonBouncingButton _button() {
-    return widget.button ??
-        MelonBouncingButton(
-          callback: _open,
-          isBouncing: true,
-          child: Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-                color: _isOpened
-                    ? _theme.textColor().withOpacity(0.9)
-                    : _theme.textColor().withOpacity(0.1),
-                borderRadius: BorderRadius.circular(30)),
-            child: Stack(
-              children: [
-                Align(
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        CupertinoIcons.ellipsis,
-                        size: 20,
-                        color: _isOpened
-                            ? _theme.backgroundColor()
-                            : _theme.textColor(),
-                      )
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        );
+  Widget _button() {
+    return OnHover(
+      x: 2.0,
+      y: 3.0,
+      z: 0.84,
+      builder: (bool isHovered) {
+        return widget.button ??
+            MelonBouncingButton(
+              callback: _open,
+              isBouncing: true,
+              child: Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                    color: _isOpened
+                        ? (isHovered
+                        ? _theme.textColor().withOpacity(0.7)
+                        : _theme.textColor().withOpacity(0.9))
+                        : (isHovered
+                        ? _theme.textColor().withOpacity(0.3)
+                        : _theme.textColor().withOpacity(0.1)),
+                    borderRadius: BorderRadius.circular(30)),
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            CupertinoIcons.ellipsis,
+                            size: 20,
+                            color: _isOpened
+                                ? _theme.backgroundColor()
+                                : _theme.textColor(),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            );
+      },
+    );
   }
 
   Widget _menuArea() {
@@ -217,46 +230,66 @@ class _MelonPopupMenuButtonState extends State<MelonPopupMenuButton>
             color: widget.color != null
                 ? widget.color?.withOpacity(widget.opacity ?? 0.1)
                 : (_theme.isDark()
-                    ? Colors.white.withOpacity(0.1)
-                    : Colors.white.withOpacity(0.6)),
+                ? Colors.white.withOpacity(0.1)
+                : Colors.white.withOpacity(0.6)),
             //: _theme.onColor().withOpacity(0.05),
+            padding : const EdgeInsets.only(bottom: 4),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: widget.actions != null
                   ? widget.actions!.map(
-                      (action) {
-                        if (action is MelonPopupMenuButtonAction) {
-                          return MelonContextMenuAction(
-                            child: action.child ??
-                                Text(
-                                  action.title ?? "",
-                                  style: action.style ?? GoogleFonts.itim(),
-                                ),
-                            disableBottomBorder: action == widget.actions!.last,
-                            isDefaultAction: action.isDefaultAction!,
-                            isDestructiveAction: action.isDestructiveAction!,
-                            onPressed: () {
-                              _close();
-                              if (action.onPressed != null) {
-                                action.onPressed!();
-                              }
+                    (action) {
+                  if (action is MelonPopupMenuButtonAction) {
+                    return Column(
+                        children: [
+                          OnHover(
+                            x: 6.0, y: 2, z: 0.90,
+                            builder: (bool isHovered) {
+                              return MelonContextMenuAction(
+                                child: action.child ??
+                                    Text(
+                                      action.title ?? "",
+                                      style: action.style ?? GoogleFonts.itim(),
+                                    ),
+                                disableBottomBorder:
+                                true,
+                                isDefaultAction: action.isDefaultAction!,
+                                isDestructiveAction:
+                                action.isDestructiveAction!,
+                                onPressed: () {
+                                  _close();
+                                  if (action.onPressed != null) {
+                                    action.onPressed!();
+                                  }
+                                },
+                                trailingIcon: action.trailingIcon,
+                              );
                             },
-                            trailingIcon: action.trailingIcon,
-                          );
-                        } else if (action is MelonPopupMenuSpacingAction) {
-                          return SizedBox(
-                            height: 10,
-                            child: Container(
-                              color: _theme.isDark()
+                          ),
+                          action != widget.actions!.last ? Container(
+                            height: 2.0,
+                              width: MediaQuery.of(context).size.width,
+                              color : _theme.isDark()
                                   ? _theme.backgroundColor().withOpacity(0.6)
-                                  : _theme.onColor().withOpacity(0.05),
-                            ),
-                          );
-                        } else {
-                          return Container();
-                        }
-                      },
-                    ).toList()
+                                  : _theme.onColor().withOpacity(0.05)
+                          ) : Container()
+
+                        ]
+                    );
+                  } else if (action is MelonPopupMenuSpacingAction) {
+                    return SizedBox(
+                      height: 10,
+                      child: Container(
+                        color: _theme.isDark()
+                            ? _theme.backgroundColor().withOpacity(0.6)
+                            : _theme.onColor().withOpacity(0.05),
+                      ),
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+              ).toList()
                   : [],
             )),
       ),

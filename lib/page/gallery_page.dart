@@ -4,8 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:meloncloud_flutter_app/cubit/main/main_cubit.dart';
+import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meloncloud_flutter_app/tools/melon_activity_indicator.dart';
 import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
+import 'package:meloncloud_flutter_app/tools/melon_refresh_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_timeline.dart';
 import 'package:routemaster/routemaster.dart';
 
@@ -34,17 +36,21 @@ class _GalleryPageState extends State<GalleryPage>
     _contentsScrollController = ScrollController();
     _peoplesScrollController = ScrollController();
     _contentsScrollController?.addListener(_handleOverScroll);
-    var state = context.read<MainCubit>().state;
+    var state = context
+        .read<MainCubit>()
+        .state;
   }
 
   @override
   void didChangeDependencies() {
     _theme = MelonTheme.of(context);
 
-    var state = context.read<MainCubit>().state;
+    var state = context
+        .read<MainCubit>()
+        .state;
     //print(state);
     if (state is MainInitialState) {
-      context.read<MainCubit>().gallery();
+      //context.read<MainCubit>().gallery(context:context);
     }
     if (!(state is MainHomeLoadingState || state is MainHomeState)) {
       //print("A");
@@ -66,7 +72,9 @@ class _GalleryPageState extends State<GalleryPage>
   void _handleOverScroll() {
     double pixels = _contentsScrollController!.position.pixels;
     if (pixels == _contentsScrollController!.position.maxScrollExtent) {
-      var state = context.read<MainCubit>().state;
+      var state = context
+          .read<MainCubit>()
+          .state;
       //print(pixels >= _scrollController.position.maxScrollExtent);
 
       if (state is MainHomeState) {
@@ -74,7 +82,7 @@ class _GalleryPageState extends State<GalleryPage>
         if (step > 0) {
           context
               .read<MainCubit>()
-              .gallery(previousState: state, command: "NEXT");
+              .gallery(context: context, previousState: state, command: "NEXT");
         }
       }
     }
@@ -83,6 +91,14 @@ class _GalleryPageState extends State<GalleryPage>
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MainCubit, MainState>(builder: (context, state) {
+      String path = Routemaster
+          .of(context)
+          .currentRoute
+          .path;
+      if (path == "/home" && state is! MainHomeState &&
+          state is! MainHomeLoadingState) {
+        context.read<MainCubit>().gallery(context: context);
+      }
       return Stack(
         children: [_layout(state), _loading(state)],
       );
@@ -113,7 +129,8 @@ class _GalleryPageState extends State<GalleryPage>
       headerHeight: 20,
       longActions: null,
       onItemTapping: (value) {
-        Routemaster.of(context).push('/tweets/${value['tweet_id']}');
+        MelonRouter.push(
+            context: context, path: '/tweets/${value['tweet_id']}');
       },
     );
   }
@@ -125,7 +142,10 @@ class _GalleryPageState extends State<GalleryPage>
   Widget _peoplesWidget(state) {
     return Container(
       height: 160,
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       child: ScrollConfiguration(
         behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
         child: ListView.builder(
@@ -179,7 +199,7 @@ class _GalleryPageState extends State<GalleryPage>
                   builder: (bool isHovered) {
                     return MelonBouncingButton(
                       callback: () {
-                        Routemaster.of(context).push('/peoples');
+                        MelonRouter.push(context: context, path: '/peoples');
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -232,8 +252,8 @@ class _GalleryPageState extends State<GalleryPage>
                   builder: (bool isHovered) {
                     return MelonBouncingButton(
                       callback: () {
-                        Routemaster.of(context)
-                            .push("/profile/${profile['id']}");
+                        MelonRouter.push(context: context,
+                            path: "/profile/${profile['id']}");
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -262,29 +282,31 @@ class _GalleryPageState extends State<GalleryPage>
                                         child: FadeInImage.assetNetwork(
                                           placeholder: 'assets/preview.png',
                                           fadeInDuration:
-                                              Duration(milliseconds: 300),
+                                          Duration(milliseconds: 300),
                                           image: _resizeImageProfile(
                                               profile['image'])!,
                                           imageErrorBuilder:
                                               (BuildContext context,
-                                                  Object exception,
-                                                  StackTrace? stackTrace) {
+                                              Object exception,
+                                              StackTrace? stackTrace) {
                                             //errorMap[position] = true;
 
                                             return Container(
                                               color: _theme!
                                                   .onColor()
                                                   .withOpacity(0.2),
-                                              width: MediaQuery.of(context)
+                                              width: MediaQuery
+                                                  .of(context)
                                                   .size
                                                   .width,
-                                              height: MediaQuery.of(context)
+                                              height: MediaQuery
+                                                  .of(context)
                                                   .size
                                                   .height,
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.max,
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment.center,
+                                                MainAxisAlignment.center,
                                                 children: [
                                                   Icon(
                                                     CupertinoIcons
@@ -322,7 +344,7 @@ class _GalleryPageState extends State<GalleryPage>
                                           color: CupertinoColors.systemYellow
                                               .withOpacity(0.9),
                                           borderRadius:
-                                              BorderRadius.circular(16)),
+                                          BorderRadius.circular(16)),
                                       child: Text(
                                         "$value",
                                         maxLines: 1,
@@ -331,7 +353,7 @@ class _GalleryPageState extends State<GalleryPage>
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
                                             color:
-                                                Colors.black.withOpacity(0.8)),
+                                            Colors.black.withOpacity(0.8)),
                                       ),
                                     ),
                                   )
@@ -373,8 +395,8 @@ class _GalleryPageState extends State<GalleryPage>
           },
           scrollDirection: Axis.horizontal,
           itemCount: (state is MainHomeState
-                  ? (state.peoples != null ? state.peoples.length : 0)
-                  : 0) +
+              ? (state.peoples != null ? state.peoples.length : 0)
+              : 0) +
               1,
         ),
       ),
@@ -384,121 +406,83 @@ class _GalleryPageState extends State<GalleryPage>
   Widget _loading(state) {
     if (state is MainHomeLoadingState) {
       if (state.previousState == null) {
-        return Align(
-          alignment: Alignment.center,
-          child: SizedBox(
-            width: 150,
-            height: 150,
-            child: Column(
-              children: [
-                Icon(
-                  CupertinoIcons.cloud,
-                  size: 100,
-                  color: _theme?.textColor().withOpacity(0.9),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "กำลังโหลด..",
-                  style: GoogleFonts.itim(
-                      fontSize: 24,
-                      color: _theme?.textColor().withOpacity(0.9)),
-                )
-              ],
-            ),
-          ),
-        );
+        return _loadingContent();
       } else {
         return Container();
       }
-    } else {
+    } else if (state is! MainHomeLoadingState && state is! MainHomeState) {
+      return _loadingContent();
+    }
+    else {
       return Container();
     }
   }
 
-  Widget _trailing(state) {
-    return Container(
-      child: MelonBouncingButton(
-        callback: () {
-          if (state is MainHomeState) {
-            _scrollToTop(state);
-            context.read<MainCubit>().gallery();
-          } else if (state is! MainHomeLoadingState) {
-            showCupertinoDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return CupertinoAlertDialog(
-                    title: const Text("ยืนยันการรีเฟรช"),
-                    content: const Text(
-                        "พบการโหลดข้อมูลหน้าอื่นอยู่เบื้องหลังหรือไม่ก็่หน้าต่างปัจจุบันอยู่ในตำแหน่งไม่ตรง คุณต้องการยืนยันหรือไม่?"),
-                    actions: [
-                      CupertinoDialogAction(
-                          child: const Text("ยืนยัน"),
-                          isDefaultAction: true,
-                          isDestructiveAction: true,
-                          onPressed: () {
-                            context.read<MainCubit>().gallery(
-                                previousState:
-                                    state is MainHomeState ? state : null);
-                            Navigator.of(context).pop();
-                          }),
-                      CupertinoDialogAction(
-                          child: const Text("ยกเลิก"),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          })
-                    ],
-                  );
-                },
-                barrierDismissible: false);
-          }
-        },
-        isBouncing: state is! MainHomeLoadingState,
-        child: OnHover(
-          disableScale: true,
-          builder: (isHovered) {
-            return Container(
-              width: state is MainHomeLoadingState ? 130 : 80,
-              height: 32,
-              decoration: BoxDecoration(
-                  color: state is MainHomeLoadingState
-                      ? CupertinoTheme.of(context).primaryColor.withOpacity(0.8)
-                      : _theme!.onButtonColor(isHovered),
-                  borderRadius: BorderRadius.circular(30)),
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        state is MainHomeLoadingState
-                            ? CupertinoTheme(
-                                data: CupertinoTheme.of(context).copyWith(),
-                                child: const MelonActivityIndicator())
-                            : Container(),
-                        SizedBox(
-                          width: state is MainHomeLoadingState ? 6 : 0,
-                        ),
-                        Text(
-                          state is MainHomeLoadingState
-                              ? 'กำลังโหลด..'
-                              : 'รีเฟรช',
-                          style: GoogleFonts.itim(
-                              color: state is MainHomeLoadingState
-                                  ? Colors.white
-                                  : _theme?.onColor()),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            );
-          },
+  Widget _loadingContent() {
+    return Align(
+      alignment: Alignment.center,
+      child: SizedBox(
+        width: 150,
+        height: 150,
+        child: Column(
+          children: [
+            Icon(
+              CupertinoIcons.cloud,
+              size: 100,
+              color: _theme?.textColor().withOpacity(0.9),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              "กำลังโหลด..",
+              style: GoogleFonts.itim(
+                  fontSize: 24,
+                  color: _theme?.textColor().withOpacity(0.9)),
+            )
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _trailing(state) {
+    return MelonRefreshButton(
+        isLoading: state is MainHomeLoadingState, callback: () {
+      if (state is MainHomeState) {
+        _scrollToTop(state);
+        context.read<MainCubit>().gallery(context: context);
+      } else if (state is! MainHomeLoadingState) {
+        showCupertinoDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return CupertinoAlertDialog(
+                title: const Text("ยืนยันการรีเฟรช"),
+                content: const Text(
+                    "พบการโหลดข้อมูลหน้าอื่นอยู่เบื้องหลังหรือไม่ก็่หน้าต่างปัจจุบันอยู่ในตำแหน่งไม่ตรง คุณต้องการยืนยันหรือไม่?"),
+                actions: [
+                  CupertinoDialogAction(
+                      child: const Text("ยืนยัน"),
+                      isDefaultAction: true,
+                      isDestructiveAction: true,
+                      onPressed: () {
+                        context.read<MainCubit>().gallery(context: context,
+                            previousState:
+                            state is MainHomeState ? state : null);
+                        Navigator.of(context).pop();
+                      }),
+                  CupertinoDialogAction(
+                      child: const Text("ยกเลิก"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      })
+                ],
+              );
+            },
+            barrierDismissible: false);
+      }
+    }
+
     );
   }
 
@@ -509,7 +493,7 @@ class _GalleryPageState extends State<GalleryPage>
         return MelonBouncingButton(
           callback: () {
             if (state is MainHomeState) {
-              Routemaster.of(context).push('/home');
+              MelonRouter.push(context: context, path: '/home');
             }
           },
           isBouncing: true,
@@ -563,7 +547,7 @@ class _GalleryPageState extends State<GalleryPage>
           if (_contentsScrollController!.offset > 10) {
             _contentsScrollController!
                 .animateTo(-100,
-                    duration: const Duration(seconds: 1), curve: Curves.linear)
+                duration: const Duration(seconds: 1), curve: Curves.linear)
                 .whenComplete(() {});
           }
         }

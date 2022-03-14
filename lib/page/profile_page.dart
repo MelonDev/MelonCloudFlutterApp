@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meloncloud_flutter_app/tools/melon_activity_indicator.dart';
 import 'package:meloncloud_flutter_app/tools/melon_back_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
@@ -373,7 +374,7 @@ class _ProfilePageState extends State<ProfilePage> {
               disableAppbar: true,
               data: data,
               onItemTapping: (value) {
-                Routemaster.of(context).push("/tweets/${value['tweet_id']}");
+                MelonRouter.push(context: context, path:"/tweets/${value['tweet_id']}");
               },
               header: _header(state),
               headerHeight: MediaQuery
