@@ -1,11 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
-import 'package:meloncloud_flutter_app/cubit/main/main_cubit.dart';
 import 'package:meloncloud_flutter_app/environment/app_environment.dart';
 import 'package:meloncloud_flutter_app/extensions/http_extension.dart';
 import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
 
-import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meta/meta.dart';
 
 part 'hashtags_state.dart';
