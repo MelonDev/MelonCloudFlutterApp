@@ -1,6 +1,4 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 class AppEnvironment {
-  static String server = dotenv.env['SERVER'] ?? "";
-  static String token = dotenv.env['TWITTER_VIEWER_TOKEN'] ?? "";
+  static String server = "meloncloud.herokuapp.com";
+  static String token = "YFphWX-nC2NPd-hw9lEq-3ZmLRs-K1ux4r";
 }

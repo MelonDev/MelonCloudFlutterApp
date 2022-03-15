@@ -103,7 +103,6 @@ Future main() async {
     }
   }
   //await dotenv.load(fileName: "assets/.env");
-  await dotenv.load(fileName: ".env");
   setPathUrlStrategy();
   runApp(const MyApp());
 }
