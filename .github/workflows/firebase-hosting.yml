@@ -39,5 +39,4 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "meloncloud-app" #Must be unique in Heroku
           heroku_email: "melondev@icloud.com"
-          appdir: "build/web"
           remote_branch: "heroku"
