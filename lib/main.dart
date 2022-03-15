@@ -121,6 +121,7 @@ class MyApp extends StatelessWidget {
       ],
       child: Portal(
         child: CupertinoApp.router(
+          title: "MelonCloud",
           debugShowCheckedModeBanner: false,
           routeInformationParser: const RoutemasterParser(),
           routerDelegate: RoutemasterDelegate(
