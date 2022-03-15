@@ -92,9 +92,7 @@ final routes = RouteMap(
 
 Future main() async {
   Intl.defaultLocale = "th";
-
   initializeDateFormatting();
-
   //SharedPreferences? prefs = await SharedPreferences.getInstance();
   //await prefs.setStringList('routes', <String>[]);
   if (!kIsWeb) {
@@ -102,8 +100,7 @@ Future main() async {
       await FlutterDisplayMode.setHighRefreshRate();
     }
   }
-  //await dotenv.load(fileName: "assets/.env");
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "assets/.env");
   setPathUrlStrategy();
   runApp(const MyApp());
 }
