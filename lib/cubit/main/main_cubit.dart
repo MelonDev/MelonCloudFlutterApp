@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:async/async.dart';
 import 'package:bloc/bloc.dart';
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:meloncloud_flutter_app/environment/app_environment.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meta/meta.dart';

@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -92,9 +91,7 @@ final routes = RouteMap(
 
 Future main() async {
   Intl.defaultLocale = "th";
-
   initializeDateFormatting();
-
   //SharedPreferences? prefs = await SharedPreferences.getInstance();
   //await prefs.setStringList('routes', <String>[]);
   if (!kIsWeb) {
@@ -102,7 +99,6 @@ Future main() async {
       await FlutterDisplayMode.setHighRefreshRate();
     }
   }
-  //await dotenv.load(fileName: "assets/.env");
   setPathUrlStrategy();
   runApp(const MyApp());
 }
