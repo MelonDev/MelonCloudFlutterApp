@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
-import 'package:dart_extensions_methods/dart_extension_methods.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +14,6 @@ import 'package:meloncloud_flutter_app/cubit/main/main_cubit.dart';
 import 'package:meloncloud_flutter_app/cubit/peoples/peoples_cubit.dart';
 import 'package:meloncloud_flutter_app/cubit/profile/profile_cubit.dart';
 import 'package:meloncloud_flutter_app/cubit/tweet/tweet_cubit.dart';
-import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
-import 'package:meloncloud_flutter_app/model/MenuModel.dart';
 import 'package:meloncloud_flutter_app/page/error_page.dart';
 import 'package:meloncloud_flutter_app/page/event_page.dart';
 import 'package:meloncloud_flutter_app/page/gallery_page.dart';
@@ -29,32 +25,23 @@ import 'package:meloncloud_flutter_app/page/peoples_page.dart';
 import 'package:meloncloud_flutter_app/page/profile_page.dart';
 import 'package:meloncloud_flutter_app/page/tweet_page.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
-import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
 import 'package:routemaster/routemaster.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sizer/sizer.dart';
-
 import 'package:url_strategy/url_strategy.dart';
-
 import 'cubit/route/route_cubit.dart';
-import 'main.dart';
 
 final routes = RouteMap(
-  //onUnknownRoute: (route) => const Redirect('/'),
+  onUnknownRoute: (route) => const Redirect('/'),
   routes: {
     '/': (route) => CupertinoTabPage(
-          child: HomePage(),
+          child: const HomePage(),
           paths: MelonRouter.tabsRoute,
         ),
     '/home': (route) {
       return CupertinoPage(child: GalleryPage());
     },
-    //child: OldGalleryPage(title: 'คลังภาพ', page: "home", message: "h")),
     '/events': (route) {
       return const CupertinoPage(child: EventPage());
     },
-//child: OldGalleryPage(title: 'เทศกาล', page: "events", message: "e")),
-
     '/tags': (route) => const CupertinoPage(child: HashtagsPage()),
     '/books': (route) => CupertinoPage(
             child: Container(
@@ -65,7 +52,6 @@ final routes = RouteMap(
           color: Colors.purple,
         )),
     '/error': (route) => CupertinoPage(child: ErrorPage(callback: (){
-      print("ทดสอบ");
     })),
 
     '/tweets/:id': (route) => CupertinoPage(
