@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:meloncloud_flutter_app/environment/app_environment.dart';
 import 'package:meloncloud_flutter_app/extensions/http_extension.dart';
 import 'package:meta/meta.dart';
 import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
@@ -12,8 +13,8 @@ part 'peoples_state.dart';
 class PeoplesCubit extends Cubit<PeoplesBaseState> {
   PeoplesCubit() : super(PeoplesInitialState());
   final String _path = "api/v3/twitter";
-  final String _server = dotenv.env['SERVER'] ?? "";
-  final String _token = dotenv.env['TWITTER_VIEWER_TOKEN'] ?? "";
+  final String _server = AppEnvironment.server;
+  final String _token = AppEnvironment.token;
 
   load({PeoplesState? previousState, String? command}) async {
     emit(PeoplesLoadingState(previousState: previousState));

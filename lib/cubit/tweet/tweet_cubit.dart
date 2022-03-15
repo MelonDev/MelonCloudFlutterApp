@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:meloncloud_flutter_app/environment/app_environment.dart';
 import 'package:meloncloud_flutter_app/extensions/http_extension.dart';
 import 'package:meta/meta.dart';
 import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
@@ -10,8 +11,8 @@ part 'tweet_state.dart';
 
 class TweetCubit extends Cubit<TweetState> {
   final String _path = "api/v3/twitter";
-  final String _server = dotenv.env['SERVER'] ?? "";
-  final String _token = dotenv.env['TWITTER_VIEWER_TOKEN'] ?? "";
+  final String _server = AppEnvironment.server;
+  final String _token = AppEnvironment.token;
 
   TweetCubit() : super(TweetInitialState());
 

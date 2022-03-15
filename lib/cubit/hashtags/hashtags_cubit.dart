@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:meloncloud_flutter_app/cubit/main/main_cubit.dart';
+import 'package:meloncloud_flutter_app/environment/app_environment.dart';
 import 'package:meloncloud_flutter_app/extensions/http_extension.dart';
 import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
 
@@ -12,8 +13,8 @@ part 'hashtags_state.dart';
 
 class HashtagsCubit extends Cubit<HashtagsBaseState> {
   final String _path = "api/v3/twitter";
-  final String _server = dotenv.env['SERVER'] ?? "";
-  final String _token = dotenv.env['TWITTER_VIEWER_TOKEN'] ?? "";
+  final String _server = AppEnvironment.server;
+  final String _token = AppEnvironment.token;
 
   HashtagsCubit() : super(HashtagsInitialState());
 
