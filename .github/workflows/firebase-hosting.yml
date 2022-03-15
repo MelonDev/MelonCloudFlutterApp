@@ -27,16 +27,14 @@ jobs:
         run: flutter config --enable-web
       - name: 'Build Web App'
         run: flutter build web
+      - name: 'Deploy'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.TOKEN }}
+          publish_dir: ./build/web
       - name: 'Deploy to Firebase Hosting'
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-      - name: 'Deploy to Heroku'
-        uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "meloncloud-app" #Must be unique in Heroku
-          heroku_email: "melondev@icloud.com"
-          remote_branch: "heroku"
