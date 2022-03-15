@@ -3,10 +3,10 @@ name: Deploy to Firebase Hosting
 on:
   push:
     branches:
-      - heroku
+      - web
   pull_request:
     branches:
-      - heroku
+      - web
 
   workflow_dispatch:
 
