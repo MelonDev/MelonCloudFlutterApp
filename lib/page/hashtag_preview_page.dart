@@ -1,51 +1,61 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:meloncloud_flutter_app/cubit/hashtags/hashtags_cubit.dart';
 import 'package:meloncloud_flutter_app/page/error_page.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
-import 'package:meloncloud_flutter_app/tools/melon_activity_indicator.dart';
-import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_loading_widget.dart';
+import 'package:meloncloud_flutter_app/tools/melon_refresh_button.dart';
+import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
 import 'package:meloncloud_flutter_app/tools/melon_timeline.dart';
 import 'package:routemaster/routemaster.dart';
 
-import '../cubit/main/main_cubit.dart';
-import '../tools/melon_refresh_button.dart';
-import '../tools/melon_theme.dart';
+import '../tools/melon_back_button.dart';
 
-class EventPage extends StatefulWidget {
-  const EventPage({Key? key}) : super(key: key);
-
+class HashtagPreviewPage extends StatefulWidget {
+  HashtagPreviewPage({Key? key,required this.name}) : super(key: key);
+  String name;
   @override
-  _EventPageState createState() => _EventPageState();
+  _HashtagPreviewPageState createState() => _HashtagPreviewPageState();
 }
 
-class _EventPageState extends State<EventPage> {
-  MelonThemeData? _theme;
+class _HashtagPreviewPageState extends State<HashtagPreviewPage> {
 
+  MelonThemeData? _theme;
   ScrollController? _contentsScrollController;
+  late String name;
 
   @override
   void initState() {
     super.initState();
+    name = Uri.decodeFull(widget.name);
+    context.read<HashtagsCubit>().load(context:context, hashtagName: name);
 
     _contentsScrollController = ScrollController();
     _contentsScrollController?.addListener(_handleOverScroll);
   }
 
+  @override
+  void didChangeDependencies() {
+    _theme = MelonTheme.of(context);
+
+    super.didChangeDependencies();
+  }
+
   void _handleOverScroll() {
     double pixels = _contentsScrollController!.position.pixels;
     if (pixels == _contentsScrollController!.position.maxScrollExtent) {
-      var state = context.read<MainCubit>().state;
+      var state = context.read<HashtagsCubit>().state;
       //print(pixels >= _scrollController.position.maxScrollExtent);
 
-      if (state is MainEventState) {
+      if (state is HashtagsState) {
         int step = (_calculateHeight(state.timeline) / 150).round();
         if (step > 0) {
           context
-              .read<MainCubit>()
-              .event(context:context,previousState: state, command: "NEXT");
+              .read<HashtagsCubit>()
+              .load(context:context,previousState: state, command: "NEXT", hashtagName: name);
         }
       }
     }
@@ -53,30 +63,34 @@ class _EventPageState extends State<EventPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MainCubit, MainState>(builder: (context, state) {
+    return BlocBuilder<HashtagsCubit, HashtagsBaseState>(builder: (context, state) {
       String path = Routemaster.of(context).currentRoute.path;
-      if (path == "/events" && state is! MainEventState && state is! MainEventLoadingState && state is! MainEventFailureState){
-        context.read<MainCubit>().event(context:context);
+      if (path == "/hashtags/${widget.name}" && state is! HashtagsState && state is! HashtagsLoadingState && state is! HashtagsFailureState){
+        context.read<HashtagsCubit>().load(context:context, hashtagName: name);
       }
-      if (state is MainEventFailureState){
+      if (state is HashtagsFailureState){
         return ErrorPage(callback: (){
-          context.read<MainCubit>().event(context: context);
+          context.read<HashtagsCubit>().load(context:context, hashtagName: name);
         });
       }
-      return Stack(
-        children: [_layout(state), _loading(state)],
+      return Container(
+        color: _theme!.backgroundColor(),
+        child: Stack(
+          children: [_layout(state), _loading(state)],
+        )
       );
     });
   }
 
+
   Widget _layout(state) {
     Map<dynamic, List<dynamic>> data = {};
 
-    if (state is MainEventState) {
+    if (state is HashtagsState) {
       data = state.timeline;
     }
 
-    if (state is MainEventLoadingState) {
+    if (state is HashtagsLoadingState) {
       if (state.previousState != null) {
         data = state.previousState!.timeline;
       }
@@ -84,9 +98,10 @@ class _EventPageState extends State<EventPage> {
 
     return MelonTimeline(
       scrollController: _contentsScrollController,
-      title: "อีเวนท์",
+      title: name,
       data: data,
       type: TimelineType.grid,
+      leadingWidget: MelonBackButton(),
       trailingWidget: _trailing(state),
       headerHeight: 0,
       longActions: null,
@@ -97,13 +112,13 @@ class _EventPageState extends State<EventPage> {
   }
 
   Widget _loading(state) {
-    if (state is MainEventLoadingState) {
+    if (state is HashtagsLoadingState) {
       if (state.previousState == null) {
         return const MelonLoadingWidget();
       } else {
         return Container();
       }
-    } else if (state is! MainEventLoadingState && state is! MainEventState) {
+    } else if (state is! HashtagsLoadingState && state is! HashtagsState) {
       return const MelonLoadingWidget();
     }
     else {
@@ -112,11 +127,11 @@ class _EventPageState extends State<EventPage> {
   }
 
   Widget _trailing(state) {
-    return MelonRefreshButton(isLoading: state is MainEventLoadingState, callback: (){
-      if (state is MainEventState) {
+    return MelonRefreshButton(isLoading: state is HashtagsLoadingState, callback: (){
+      if (state is HashtagsState) {
         _scrollToTop(state);
-        context.read<MainCubit>().event(context:context);
-      } else if (state is! MainEventLoadingState) {
+        context.read<HashtagsCubit>().load(context:context, hashtagName: name);
+      } else if (state is! HashtagsLoadingState) {
         showCupertinoDialog(
             context: context,
             builder: (BuildContext context) {
@@ -130,10 +145,10 @@ class _EventPageState extends State<EventPage> {
                       isDefaultAction: true,
                       isDestructiveAction: true,
                       onPressed: () {
-                        context.read<MainCubit>().event(
+                        context.read<HashtagsCubit>().load(
                             context:context,
                             previousState:
-                            state is MainEventState ? state : null);
+                            state is HashtagsState ? state : null, hashtagName: name);
                         Navigator.of(context).pop();
 
                       }),
@@ -153,13 +168,13 @@ class _EventPageState extends State<EventPage> {
   }
 
   _scrollToTop(state) {
-    if (state is MainEventState) {
+    if (state is HashtagsState) {
       if (_calculateHeight(state.timeline) <= state.timeline.length) {
         if (_contentsScrollController!.hasClients) {
           if (_contentsScrollController!.offset > 10) {
             _contentsScrollController!
                 .animateTo(-100,
-                    duration: const Duration(seconds: 1), curve: Curves.linear)
+                duration: const Duration(seconds: 1), curve: Curves.linear)
                 .whenComplete(() {});
           }
         }

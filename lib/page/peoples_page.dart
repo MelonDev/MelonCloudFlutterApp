@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:meloncloud_flutter_app/page/error_page.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meloncloud_flutter_app/tools/melon_activity_indicator.dart';
 import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
@@ -65,6 +66,11 @@ class _PeoplesPageState extends State<PeoplesPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<PeoplesCubit, PeoplesBaseState>(
         builder: (context, state) {
+          if (state is PeoplesFailureState) {
+        return ErrorPage(callback: () {
+          context.read<PeoplesCubit>().load();
+        });
+      }
       if (state is PeoplesState || state is PeoplesLoadingState) {
         return Stack(
           children: [_timeline(state), _loading(state)],

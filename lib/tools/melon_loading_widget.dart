@@ -18,8 +18,9 @@ class MelonLoadingWidget extends StatelessWidget {
         height: 150,
         child: Column(
           children: [
+
             Icon(
-              Ionicons.cloud_download_outline,
+              CupertinoIcons.cloud,
               size: 100,
               color: _theme.textColor().withOpacity(0.9),
             ),

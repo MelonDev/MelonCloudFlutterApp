@@ -40,6 +40,9 @@ class MelonThemeData {
   Color barColor() => backgroundColor().withOpacity(0.7);
 
   Color textColor({Brightness? brightness}) => isDark(brightness: brightness) ? Colors.white : Colors.black.withOpacity(0.8);
+  Color onErrorColor({Brightness? brightness}) => isDark(brightness: brightness) ? const Color(
+      0xffac3131) : const Color(0xfffc9191);
+
 
   Color popButtonColor({Brightness? brightness}) => isDark(brightness: brightness) ? Colors.white.withOpacity(0.2) : Colors.white.withOpacity(1.0);
   Color popButtonShadowColor({Brightness? brightness}) => isDark(brightness: brightness) ? Colors.white.withOpacity(0.0) : Colors.black.withOpacity(0.2);

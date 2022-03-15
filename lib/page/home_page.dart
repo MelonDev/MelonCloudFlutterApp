@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
   void didChangeDependencies() {
     _tabState = CupertinoTabPage.of(context);
     _tabState.controller.removeListener(selecting);
-    _tabState.controller.addListener(selecting);
+    //_tabState.controller.addListener(selecting);
     super.didChangeDependencies();
   }
 

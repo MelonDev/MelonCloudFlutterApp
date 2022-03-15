@@ -47,14 +47,20 @@ class MelonRouter {
     }
     path+=params;
 
+    if(tabsRoute.contains(currentPath) && tabsRoute.length > 1){
+      routes = [currentPath];
+    }
 
     if (!tabsRoute.contains(path)) {
       routes ??= [];
       if (routes.isEmpty){
         routes = [currentPath];
-      }else if (!routes.contains(currentPath)){
+      }
+      /*else if (!routes.contains(currentPath)){
         routes = ["/",currentPath];
       }
+
+       */
       routes.add(path);
       await prefs.setStringList('routes', routes);
       Routemaster.of(context).push(path, queryParameters: queryParameters);
@@ -62,15 +68,18 @@ class MelonRouter {
       routes = [path];
       await prefs.setStringList('routes', routes);
     }
+    print(routes);
   }
 
   static pop_async({required BuildContext context}) async {
     SharedPreferences? prefs = await SharedPreferences.getInstance();
+    String currentPath = Routemaster.of(context).currentRoute.path;
     List<String>? routes = prefs.getStringList('routes');
     String? path = lastPath(routes);
     List<String>? finalRoutes = popPath(routes);
     await prefs.setStringList('routes', finalRoutes ?? []);
     Routemaster.of(context).push(path ?? "/");
+    print(routes);
   }
 
   static String? lastPath(List<String>? routes) {

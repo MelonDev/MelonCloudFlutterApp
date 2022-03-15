@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:meloncloud_flutter_app/cubit/main/main_cubit.dart';
+import 'package:meloncloud_flutter_app/page/error_page.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meloncloud_flutter_app/tools/melon_activity_indicator.dart';
 import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
@@ -36,37 +37,12 @@ class _GalleryPageState extends State<GalleryPage>
     _contentsScrollController = ScrollController();
     _peoplesScrollController = ScrollController();
     _contentsScrollController?.addListener(_handleOverScroll);
-    var state = context
-        .read<MainCubit>()
-        .state;
   }
 
   @override
   void didChangeDependencies() {
     _theme = MelonTheme.of(context);
-
-    var state = context
-        .read<MainCubit>()
-        .state;
-    //print(state);
-    if (state is MainInitialState) {
-      //context.read<MainCubit>().gallery(context:context);
-    }
-    if (!(state is MainHomeLoadingState || state is MainHomeState)) {
-      //print("A");
-      //context.read<MainCubit>().gallery(command:"A");
-    }
     super.didChangeDependencies();
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 
   void _handleOverScroll() {
@@ -96,8 +72,13 @@ class _GalleryPageState extends State<GalleryPage>
           .currentRoute
           .path;
       if (path == "/home" && state is! MainHomeState &&
-          state is! MainHomeLoadingState) {
+          state is! MainHomeLoadingState && state is! MainHomeFailureState) {
         context.read<MainCubit>().gallery(context: context);
+      }
+      if (state is MainHomeFailureState){
+        return ErrorPage(callback: (){
+          context.read<MainCubit>().gallery(context: context);
+        });
       }
       return Stack(
         children: [_layout(state), _loading(state)],

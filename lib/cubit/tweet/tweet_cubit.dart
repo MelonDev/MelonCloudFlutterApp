@@ -26,7 +26,7 @@ class TweetCubit extends Cubit<TweetState> {
     if (response.statusCode == 200) {
       emit(LoadedTweetState(response.data['data']));
     } else {
-      emit(FailedTweetState());
+      emit(TweetFailureState());
     }
   }
 

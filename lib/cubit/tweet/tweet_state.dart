@@ -11,10 +11,10 @@ class LoadingTweetState extends TweetState {
   LoadingTweetState({this.previousState});
 }
 
-class FailedTweetState extends TweetState {
+class TweetFailureState extends TweetState {
   LoadedTweetState? previousState;
 
-  FailedTweetState({this.previousState});
+  TweetFailureState({this.previousState});
 }
 
 class LoadedTweetState extends TweetState {

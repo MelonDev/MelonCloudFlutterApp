@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:meloncloud_flutter_app/cubit/tweet/tweet_cubit.dart';
+import 'package:meloncloud_flutter_app/page/error_page.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meloncloud_flutter_app/tools/melon_back_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
@@ -30,22 +31,30 @@ class _TweetPageState extends State<TweetPage> {
   bool disable = false;
 
   @override
+  void initState() {
+    super.initState();
+    context.read<TweetCubit>().load(widget.tweetid);
+  }
+
+  @override
   Widget build(BuildContext context) {
     _theme = MelonTheme.of(context);
 
     if (MediaQuery.of(context).size.width >= 900) {
       _width = 390.0;
-    } else if (MediaQuery.of(context).size.width >= 500) {
-      _width = 500.0;
+    } else if (MediaQuery.of(context).size.width >= 600) {
+      _width = 600.0;
     } else {
       _width = MediaQuery.of(context).size.width;
     }
 
-    context.read<TweetCubit>().load(widget.tweetid);
-
     return BlocBuilder<TweetCubit, TweetState>(builder: (context, state) {
       bool isActiveBlurNavigationBar = false;
-
+      if (state is TweetFailureState) {
+        return ErrorPage(callback: () {
+          context.read<TweetCubit>().load(widget.tweetid);
+        });
+      }
       return Container(
         color: _theme.backgroundColor(),
         child: Stack(
@@ -273,13 +282,16 @@ class _TweetPageState extends State<TweetPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-
+                width: _width + 32,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _profileWidget(state),
-                    _currentStatusWidget(state),
+                    SizedBox(
+                      height: (10).toDouble(),
+                    ),
+                    _currentStatusWidget(state, 600),
                     SizedBox(
                       height: (26).toDouble(),
                     ),
@@ -295,10 +307,10 @@ class _TweetPageState extends State<TweetPage> {
               ),
               Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withOpacity(0.0),
                     borderRadius: BorderRadius.circular(20),
                   ),
-
+                  padding: const EdgeInsets.only(bottom: 30),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -327,20 +339,29 @@ class _TweetPageState extends State<TweetPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _profileWidget(state),
-                _currentStatusWidget(state),
+                SizedBox(
+                  height: (10).toDouble(),
+                ),
+                _currentStatusWidget(state, 600),
                 _titleWidget("รูปภาพ"),
                 _photoWidget(state),
+
                 SizedBox(
                   height: (26).toDouble(),
                 ),
                 _tagGroupWidget(state),
+
                 _isEnableMessage(state)
                     ? _titleWidget("ข้อความ", marginTop: 0)
                     : Container(),
+
+
                 _isEnableMessage(state) ? _langGroupWidget(state) : Container(),
                 SizedBox(
                   height: (40).toDouble(),
                 ),
+
+
               ],
             )
           ]));
@@ -350,7 +371,10 @@ class _TweetPageState extends State<TweetPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _profileWidget(state),
-          _currentStatusWidget(state),
+          SizedBox(
+            height: (10).toDouble(),
+          ),
+          _currentStatusWidget(state, MediaQuery.of(context).size.width),
           _titleWidget("รูปภาพ"),
           _photoWidget(state),
           SizedBox(
@@ -391,7 +415,9 @@ class _TweetPageState extends State<TweetPage> {
             margin: const EdgeInsets.only(top: 20),
             width: MediaQuery.of(context).size.width >= 900
                 ? MediaQuery.of(context).size.width - _width - 40
-                : _width,
+                : (MediaQuery.of(context).size.width >= 600
+                    ? 600
+                    : _width),
             height: MediaQuery.of(context).size.width > 900
                 ? _width * 1.1
                 : _width * 0.6,
@@ -421,7 +447,6 @@ class _TweetPageState extends State<TweetPage> {
                                   context: context,
                                   path: "/preview",
                                   queryParameters: queryParameters);
-
                             }
                           },
                           child: Hero(
@@ -547,9 +572,9 @@ class _TweetPageState extends State<TweetPage> {
       _listWidget
           .add(_langWidget(state.data['message'], state.data['language']));
     }
-
+    double w = MediaQuery.of(context).size.width;
     return Container(
-      margin: EdgeInsets.only(left: 16, right: 16, top: 10),
+      margin: w < 600 || w >= 900 ? const EdgeInsets.only(left: 16, right: 16, top: 10) : EdgeInsets.only(left: 0, right: 0, top: 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -627,15 +652,16 @@ class _TweetPageState extends State<TweetPage> {
     );
   }
 
-  Widget _currentStatusWidget(LoadedTweetState state) {
+  Widget _currentStatusWidget(LoadedTweetState state, double width) {
     bool memories = state.data['memories'] ?? false;
 
-    print("WIDTH: $_width");
+    double w = MediaQuery.of(context).size.width;
 
     return Container(
       height: 70,
-      margin: EdgeInsets.only(top: 30, left: 20, right: memories ? 6 : 20),
-      width: _width,
+      margin: w < 600 || w >= 900 ? EdgeInsets.only(left: w < 600 ? 26 : 20, right: memories ? 6 : 20) : EdgeInsets.only(left: memories ? 6 : 0, right:0),
+      //margin: EdgeInsets.only(top: 30, left: 20, right: memories ? 6 : 20),
+      //width: width,
       child: Row(
         mainAxisSize: MainAxisSize.max,
         children: [
@@ -801,7 +827,7 @@ class _TweetPageState extends State<TweetPage> {
   double _statusWidgetWidth(bool forceMarginRight, {bool enableFour = false}) {
     double width = _width;
 
-    if (MediaQuery.of(context).size.width < 500) {
+    if (MediaQuery.of(context).size.width < 600) {
       width -= (20 + (forceMarginRight ? 6 : 20));
     }
 
@@ -864,13 +890,7 @@ class _TweetPageState extends State<TweetPage> {
       builder: (bool isHovered) {
         return MelonBouncingButton(
           callback: () {
-            /*Navigator.push(
-            context,
-            CupertinoPageRoute<CupertinoPageScaffold>(
-                builder: (_) => HashtagDetailPage(
-                    fromTitle: "ทวีต", hashtag: {"name": title})));
-
-         */
+            MelonRouter.push(context: context, path: "/hashtags/$title");
           },
           child: Container(
             decoration: BoxDecoration(
@@ -942,12 +962,13 @@ class _TweetPageState extends State<TweetPage> {
             CupertinoIcons.number));
       }
     }
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
-      child: Row(children: widgets),
-    );
+    return ScrollConfiguration(
+        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
+          child: Row(children: widgets),
+        ));
   }
 
   String _getLangName(String name) {

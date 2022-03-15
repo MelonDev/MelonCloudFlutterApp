@@ -12,14 +12,18 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:meloncloud_flutter_app/cubit/hashtags/hashtags_cubit.dart';
 import 'package:meloncloud_flutter_app/cubit/main/main_cubit.dart';
 import 'package:meloncloud_flutter_app/cubit/peoples/peoples_cubit.dart';
 import 'package:meloncloud_flutter_app/cubit/profile/profile_cubit.dart';
 import 'package:meloncloud_flutter_app/cubit/tweet/tweet_cubit.dart';
 import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
 import 'package:meloncloud_flutter_app/model/MenuModel.dart';
+import 'package:meloncloud_flutter_app/page/error_page.dart';
 import 'package:meloncloud_flutter_app/page/event_page.dart';
 import 'package:meloncloud_flutter_app/page/gallery_page.dart';
+import 'package:meloncloud_flutter_app/page/hashtag_preview_page.dart';
+import 'package:meloncloud_flutter_app/page/hashtags_page.dart';
 import 'package:meloncloud_flutter_app/page/home_page.dart';
 import 'package:meloncloud_flutter_app/page/image_preview_page.dart';
 import 'package:meloncloud_flutter_app/page/peoples_page.dart';
@@ -52,10 +56,7 @@ final routes = RouteMap(
     },
 //child: OldGalleryPage(title: 'เทศกาล', page: "events", message: "e")),
 
-    '/tags': (route) => CupertinoPage(
-            child: Container(
-          color: Colors.blue,
-        )),
+    '/tags': (route) => const CupertinoPage(child: HashtagsPage()),
     '/books': (route) => CupertinoPage(
             child: Container(
           color: Colors.green,
@@ -64,6 +65,10 @@ final routes = RouteMap(
             child: Container(
           color: Colors.purple,
         )),
+    '/error': (route) => CupertinoPage(child: ErrorPage(callback: (){
+      print("ทดสอบ");
+    })),
+
     '/tweets/:id': (route) => CupertinoPage(
             child: TweetPage(
           tweetid: route.pathParameters['id']!,
@@ -77,6 +82,10 @@ final routes = RouteMap(
             child: ImagePreviewPage(
           photos: route.queryParameters['photos']!,
           position: route.queryParameters['position']!,
+        )),
+    '/hashtags/:name': (route) => CupertinoPage(
+        child: HashtagPreviewPage(
+          name: route.pathParameters['name']!,
         )),
   },
 );
@@ -93,10 +102,10 @@ Future main() async {
       await FlutterDisplayMode.setHighRefreshRate();
     }
   }
-  await dotenv.load(fileName: "assets/.env");
+  //await dotenv.load(fileName: "assets/.env");
+  await dotenv.load(fileName: ".env");
   setPathUrlStrategy();
   runApp(const MyApp());
-
 }
 
 class MyApp extends StatelessWidget {
@@ -104,7 +113,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MultiBlocProvider(
       providers: [
         BlocProvider<RouteCubit>(create: (context) => RouteCubit()),
@@ -112,6 +120,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<MainCubit>(create: (context) => MainCubit()),
         BlocProvider<PeoplesCubit>(create: (context) => PeoplesCubit()),
         BlocProvider<ProfileCubit>(create: (context) => ProfileCubit()),
+        BlocProvider<HashtagsCubit>(create: (context) => HashtagsCubit()),
       ],
       child: Portal(
         child: CupertinoApp.router(

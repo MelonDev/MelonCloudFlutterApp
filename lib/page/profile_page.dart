@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:meloncloud_flutter_app/page/error_page.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meloncloud_flutter_app/tools/melon_activity_indicator.dart';
 import 'package:meloncloud_flutter_app/tools/melon_back_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
+import 'package:meloncloud_flutter_app/tools/melon_loading_widget.dart';
 import 'package:meloncloud_flutter_app/tools/melon_refresh_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
 import 'package:meloncloud_flutter_app/tools/melon_timeline.dart';
@@ -71,6 +73,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return BlocBuilder<ProfileCubit, ProfileBaseState>(
         builder: (context, state) {
+          if (state is ProfileFailureState) {
+            return ErrorPage(callback: () {
+              context.read<ProfileCubit>().load(account: widget.account);
+            });
+          }
           if (state is ProfileState || state is ProfileLoadingState) {
             return Stack(
               children: [_timeline(state), _loading(state)],
@@ -84,31 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _loading(state) {
     if (state is ProfileLoadingState) {
       if (state.previousState == null) {
-        return Align(
-          alignment: Alignment.center,
-          child: Container(
-            width: 150,
-            height: 150,
-            child: Column(
-              children: [
-                Icon(
-                  CupertinoIcons.cloud,
-                  size: 100,
-                  color: _theme!.textColor().withOpacity(0.9),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "กำลังโหลด..",
-                  style: GoogleFonts.itim(
-                      fontSize: 24,
-                      color: _theme!.textColor().withOpacity(0.9)),
-                )
-              ],
-            ),
-          ),
-        );
+        return const MelonLoadingWidget();
       } else {
         return Container();
       }

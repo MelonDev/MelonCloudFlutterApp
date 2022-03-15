@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
+import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
 
 import 'melon_bouncing_button.dart';
 
@@ -49,7 +50,8 @@ class _MelonTemplateState extends State<MelonTemplate> {
   Widget build(BuildContext context) {
     _brightness = MediaQuery.of(context).platformBrightness;
     _darkModeOn = _brightness == Brightness.dark;
-    _barColor = (_darkModeOn ? Colors.black : Colors.white).withOpacity(0.7);
+    MelonThemeData _theme = MelonTheme.of(context);
+    _barColor = (_theme.isDark() ? const Color.fromARGB(0, 25, 25, 25) : const Color.fromARGB(0, 240, 240, 240)).withOpacity(0.7);
 
     return CustomScrollView(
       controller: widget.scrollController ?? ScrollController(),
@@ -74,15 +76,20 @@ class _MelonTemplateState extends State<MelonTemplate> {
         ),
         widget.header != null
             ? SliverPadding(
-                padding: EdgeInsets.only(left: 16, right: 16,top: 10),
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 10),
                 sliver: SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                   return widget.header;
                 }, childCount: 1)),
               )
             : SliverPadding(padding: EdgeInsets.all(0)),
-        widget.sliverLayout ?? SliverPadding(padding: EdgeInsets.all(0))
+        _silverContainer()
       ],
     );
+  }
+
+  Widget _silverContainer() {
+    return widget.sliverLayout ??
+        const SliverPadding(padding: EdgeInsets.all(0));
   }
 }
