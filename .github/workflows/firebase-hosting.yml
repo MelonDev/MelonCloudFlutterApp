@@ -40,4 +40,4 @@ jobs:
           heroku_app_name: "meloncloud-app" #Must be unique in Heroku
           heroku_email: "melondev@icloud.com"
           appdir: "build/web"
-          branch: "heroku"
+          remote_branch: "heroku"
