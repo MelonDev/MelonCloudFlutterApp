@@ -26,12 +26,7 @@ jobs:
       - name: Enable flutter web
         run: flutter config --enable-web
       - name: 'Build Web App'
-        run: flutter build web
-      - name: 'Deploy'
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.TOKEN }}
-          publish_dir: ./build/web
+        run: flutter build web --release
       - name: 'Deploy to Firebase Hosting'
         uses: w9jds/firebase-action@master
         with:
