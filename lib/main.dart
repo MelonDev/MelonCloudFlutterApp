@@ -15,6 +15,8 @@ import 'package:meloncloud_flutter_app/cubit/main/main_cubit.dart';
 import 'package:meloncloud_flutter_app/cubit/peoples/peoples_cubit.dart';
 import 'package:meloncloud_flutter_app/cubit/profile/profile_cubit.dart';
 import 'package:meloncloud_flutter_app/cubit/tweet/tweet_cubit.dart';
+import 'package:meloncloud_flutter_app/page/book_page.dart';
+import 'package:meloncloud_flutter_app/page/books_library_page.dart';
 import 'package:meloncloud_flutter_app/page/error_page.dart';
 import 'package:meloncloud_flutter_app/page/event_page.dart';
 import 'package:meloncloud_flutter_app/page/gallery_page.dart';
@@ -28,6 +30,7 @@ import 'package:meloncloud_flutter_app/page/tweet_page.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:url_strategy/url_strategy.dart';
+import 'cubit/book_library/book_library_cubit.dart';
 import 'cubit/route/route_cubit.dart';
 
 final routes = RouteMap(
@@ -44,17 +47,18 @@ final routes = RouteMap(
       return const CupertinoPage(child: EventPage());
     },
     '/tags': (route) => const CupertinoPage(child: HashtagsPage()),
-    '/books': (route) => CupertinoPage(
-            child: Container(
-          color: Colors.green,
-        )),
+    '/books': (route) => const CupertinoPage(
+            child: BooksLibraryPage()),
     '/more': (route) => CupertinoPage(
             child: Container(
           color: Colors.purple,
         )),
     '/error': (route) => CupertinoPage(child: ErrorPage(callback: (){
     })),
-
+    '/book/:id': (route) => CupertinoPage(
+        child: BookPage(
+          bookid: route.pathParameters['id']!,
+        )),
     '/tweets/:id': (route) => CupertinoPage(
             child: TweetPage(
           tweetid: route.pathParameters['id']!,
@@ -104,6 +108,8 @@ class MyApp extends StatelessWidget {
         BlocProvider<PeoplesCubit>(create: (context) => PeoplesCubit()),
         BlocProvider<ProfileCubit>(create: (context) => ProfileCubit()),
         BlocProvider<HashtagsCubit>(create: (context) => HashtagsCubit()),
+        BlocProvider<BookLibraryCubit>(create: (context) => BookLibraryCubit()),
+
       ],
       child: Portal(
         child: CupertinoApp.router(
