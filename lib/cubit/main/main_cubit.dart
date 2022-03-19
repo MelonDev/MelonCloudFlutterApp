@@ -11,10 +11,14 @@ import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
 import '../../extensions/http_extension.dart';
 
 part 'main_state.dart';
+
 part 'main_home_state.dart';
+
 part 'main_event_state.dart';
+
 part 'main_hashtag_state.dart';
 
+part 'main_books_state.dart';
 
 class MainCubit extends Cubit<MainState> {
   final String _path = "api/v3/twitter";
@@ -23,7 +27,10 @@ class MainCubit extends Cubit<MainState> {
 
   MainCubit() : super(MainInitialState());
 
-  gallery({required BuildContext context,MainHomeState? previousState, String? command}) async {
+  gallery(
+      {required BuildContext context,
+      MainHomeState? previousState,
+      String? command}) async {
     emit(MainHomeLoadingState(previousState: previousState));
 
     Map<String, String> targets = {
@@ -69,7 +76,10 @@ class MainCubit extends Cubit<MainState> {
     }
   }
 
-  event({required BuildContext context, MainEventState? previousState, String? command}) async {
+  event(
+      {required BuildContext context,
+      MainEventState? previousState,
+      String? command}) async {
     emit(MainEventLoadingState(previousState: previousState));
 
     Map<String, String> targets = {
@@ -77,8 +87,7 @@ class MainCubit extends Cubit<MainState> {
       "type": "ALL",
       "hashtag": "FursuitFriday",
       "limit": "150",
-    "me_like": "false",
-
+      "me_like": "false",
     };
 
     if (command != null && previousState != null) {
@@ -111,7 +120,11 @@ class MainCubit extends Cubit<MainState> {
     }
   }
 
-  hashtag({required BuildContext context, MainHashtagState? previousState, String? query,String? command}) async {
+  hashtag(
+      {required BuildContext context,
+      MainHashtagState? previousState,
+      String? query,
+      String? command}) async {
     emit(MainHashtagLoadingState(previousState: previousState));
 
     query ??= "ALL";
@@ -121,17 +134,15 @@ class MainCubit extends Cubit<MainState> {
       "deleted": "false",
       "limit": "150",
       "me_like": "true",
-
     };
 
     if (command != null && previousState != null) {
       if (command == "NEXT" && previousState.nextPage != null) {
         targets['page'] = previousState.nextPage.toString();
-      }else if (command == "NEXT" && previousState.nextPage == null){
+      } else if (command == "NEXT" && previousState.nextPage == null) {
         targets['page'] = (previousState.currentPage + 1).toString();
       }
     }
-
 
     var params = _params(targets: targets);
 
@@ -141,37 +152,78 @@ class MainCubit extends Cubit<MainState> {
     if (response.statusCode == 200) {
       dynamic responseData = response.data['data'];
       List<dynamic> timeline =
-      previousState?.timeline != null ? previousState!.timeline : [];
+          previousState?.timeline != null ? previousState!.timeline : [];
 
       timeline.addAll(responseData);
       dynamic fabric = response.data['fabric'];
 
       MainHashtagState state = MainHashtagState(
         timeline: timeline,
-        query:query,
+        query: query,
         data: response.data,
         currentPage: fabric['current_page'],
         previousPage: fabric['previous_page'],
         nextPage: fabric['next_page'],
         dateStart: fabric['time_range']['start'],
         dateEnd: fabric['time_range']['end'],
-
       );
       emit(state);
 
-
       MelonRouter.push_async(context: context, path: '/tags');
-
-
-    } else if (response.statusCode == 400){
-      if (previousState != null){
+    } else if (response.statusCode == 400) {
+      if (previousState != null) {
         emit(previousState);
       }
-    }else {
+    } else {
       emit(MainHashtagFailureState(previousState: previousState));
     }
+  }
 
+  books(
+      {required BuildContext context,
+        MainBooksState? previousState,
+        String? command}) async {
+    emit(MainBooksLoadingState(previousState: previousState));
 
+    Map<String, String> targets = {};
+
+    if (command != null && previousState != null) {
+      if (command == "NEXT" && previousState.nextPage != null) {
+        targets['page'] = previousState.nextPage.toString();
+      } else if (command == "NEXT" && previousState.nextPage == null) {
+        targets['page'] = (previousState.currentPage + 1).toString();
+      }
+    }
+
+    var params = _params(targets: targets);
+
+    Uri uri = Uri.https(_server, '/api/v2/meloncloud-book/bypass', params);
+
+    HttpResponse response = await http_get(uri);
+    if (response.statusCode == 200) {
+      dynamic responseData = response.data['data'];
+      List<dynamic> timeline =
+      previousState?.timeline != null ? previousState!.timeline : [];
+
+      timeline.addAll(responseData);
+      dynamic fabric = response.data['fabric'];
+      MainBooksState state = MainBooksState(
+        timeline: timeline,
+        data: response.data,
+        currentPage: fabric['current_page'],
+        previousPage: fabric['previous_page'],
+        nextPage: fabric['next_page'],
+
+      );
+      emit(state);
+      MelonRouter.push_async(context: context, path: '/books');
+    } else if (response.statusCode == 400) {
+      if (previousState != null) {
+        emit(previousState);
+      }
+    } else {
+      emit(MainBooksFailureState(previousState: previousState));
+    }
   }
 
   Map<String, String> _params({Map<String, String>? targets}) {

@@ -167,7 +167,6 @@ class _MelonSliverGridState extends State<MelonSliverGrid> {
     if (widget.listData[position]['type'] == "VIDEO") {
       url = widget.listData[position]['thumbnail'];
     }
-
     //print(sub);
 
     return OnHover(builder: (bool isHovered) { return MelonBouncingButton(

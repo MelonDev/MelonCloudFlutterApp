@@ -6,6 +6,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:routemaster/routemaster.dart';
 
+import '../cubit/book_library/book_library_cubit.dart';
 import '../cubit/main/main_cubit.dart';
 import '../model/MenuModel.dart';
 import '../tools/melon_theme.dart';
@@ -63,7 +64,10 @@ class _HomePageState extends State<HomePage> {
 
   void selecting() {
     int currentIndex = _tabState.controller.index;
-
+    if (currentIndex == 3) {
+      print("SELECTING BOOKS");
+      context.read<BookLibraryCubit>().load();
+    }
 /*
     if (currentIndex == 0) {
       context.read<MainCubit>().gallery(context:context);
