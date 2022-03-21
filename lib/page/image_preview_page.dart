@@ -4,6 +4,7 @@ import 'package:dart_extensions_methods/dart_extension_methods.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meloncloud_flutter_app/tools/melon_icon_button.dart';
@@ -32,6 +33,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
 
   late List<String> _photos;
   late int _initialPage;
+  int currentIndex = 1;
 
   @override
   void initState() {
@@ -39,6 +41,13 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
     _initialPage = widget.position.toInt();
     _photos = widget.photos.split('@');
     _pageController = PageController(initialPage: _initialPage);
+    _pageController.addListener(_selecting);
+  }
+
+  void _selecting() {
+    setState(() {
+      currentIndex = (_pageController.page!).toInt() + 1;
+    });
   }
 
   @override
@@ -87,68 +96,76 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
   }
 
   Widget _middle() {
-
     bool enableNavigatorButton = false;
-    if (MediaQuery.of(context).size.width >= 500){
+    if (MediaQuery.of(context).size.width >= 500) {
       enableNavigatorButton = _photos.length > 1;
-
-    }else {
+    } else {
       enableNavigatorButton = false;
     }
 
-    return Container(
-        color: Colors.transparent,
-        width: enableNavigatorButton ? 200 : 84,
-        height: const CupertinoNavigationBar().preferredSize.height,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            enableNavigatorButton ? MelonIconButton(
-                icon: Ionicons.chevron_back,
-                brightness: Brightness.dark,
-                callback: () {
-                  if (_pageController.page! > 0) {
-                    _pageController.animateToPage(
-                        _pageController.page!.toInt() - 1,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.linear);
-                  }
-                }) : Container(),
-            SizedBox(
-              width: enableNavigatorButton ? 16 : 0,
+    return _photos.length <= 4
+        ? Container(
+            color: Colors.transparent,
+            width: enableNavigatorButton ? 200 : 84,
+            height: const CupertinoNavigationBar().preferredSize.height,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                enableNavigatorButton
+                    ? MelonIconButton(
+                        icon: Ionicons.chevron_back,
+                        brightness: Brightness.dark,
+                        callback: () {
+                          if (_pageController.page! > 0) {
+                            _pageController.animateToPage(
+                                _pageController.page!.toInt() - 1,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.linear);
+                          }
+                        })
+                    : Container(),
+                SizedBox(
+                  width: enableNavigatorButton ? 16 : 0,
+                ),
+                _photos.length > 1
+                    ? SmoothPageIndicator(
+                        controller: _pageController,
+                        // PageController
+                        count: _photos.length,
+                        effect: ExpandingDotsEffect(
+                            dotHeight: 10,
+                            dotWidth: 10,
+                            activeDotColor: Colors.white.withOpacity(1.0),
+                            dotColor: Colors.white.withOpacity(0.5)),
+                        // your preferred effect
+                        onDotClicked: (index) {})
+                    : Container(),
+                SizedBox(
+                  width: enableNavigatorButton ? 16 : 0,
+                ),
+                enableNavigatorButton
+                    ? MelonIconButton(
+                        icon: Ionicons.chevron_forward,
+                        brightness: Brightness.dark,
+                        callback: () {
+                          if (_pageController.page! < _photos.length - 1) {
+                            _pageController.animateToPage(
+                                _pageController.page!.toInt() + 1,
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.linear);
+                          }
+                        })
+                    : Container(),
+              ],
+            ))
+        : Container(
+            child: Text(
+              "หน้า ${currentIndex} จาก ${_photos.length}",
+              style: GoogleFonts.itim(
+                  color: Colors.white.withOpacity(0.9), fontSize: 16),
             ),
-
-
-            _photos.length > 1 ? SmoothPageIndicator(
-                controller: _pageController,
-                // PageController
-                count: _photos.length,
-                effect: ExpandingDotsEffect(
-                    dotHeight: 10,
-                    dotWidth: 10,
-                    activeDotColor: Colors.white.withOpacity(1.0),
-                    dotColor: Colors.white.withOpacity(0.5)),
-                // your preferred effect
-                onDotClicked: (index) {}) : Container(),
-            SizedBox(
-              width: enableNavigatorButton ? 16 : 0,
-            ),
-            enableNavigatorButton ? MelonIconButton(
-                icon: Ionicons.chevron_forward,
-                brightness: Brightness.dark,
-                callback: () {
-                  if (_pageController.page! < _photos.length - 1) {
-                    _pageController.animateToPage(
-                        _pageController.page!.toInt() + 1,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.linear);
-                  }
-                }) : Container(),
-
-
-          ],
-        ));
+          );
   }
 
   Widget _area() {
@@ -175,26 +192,26 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
               const CupertinoNavigationBar().preferredSize.height;
           return PhotoViewGalleryPageOptions.customChild(
             child: Hero(
-              tag: _photos[index],
-              child: Container(
-                padding: EdgeInsets.only(top: paddingTop),
-                child: PhotoView(
-                  loadingBuilder: (context, event) => Center(
-                    child: SizedBox(
-                      width: 36.0,
-                      height: 36.0,
-                      child: CircularProgressIndicator(
-                        value: event == null
-                            ? 0
-                            : event.cumulativeBytesLoaded / event.expectedTotalBytes!,
-                        color: Colors.white,
+                tag: _photos[index],
+                child: Container(
+                  padding: EdgeInsets.only(top: paddingTop),
+                  child: PhotoView(
+                    loadingBuilder: (context, event) => Center(
+                      child: SizedBox(
+                        width: 36.0,
+                        height: 36.0,
+                        child: CircularProgressIndicator(
+                          value: event == null
+                              ? 0
+                              : event.cumulativeBytesLoaded /
+                                  event.expectedTotalBytes!,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
+                    imageProvider: NetworkImage(_photos[index]),
                   ),
-                  imageProvider: NetworkImage(_photos[index] + ":orig"),
-                ),
-              )
-            ),
+                )),
             disableGestures: false,
             controller: viewController,
             initialScale: PhotoViewComputedScale.contained * 1,

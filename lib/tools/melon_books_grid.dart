@@ -43,8 +43,8 @@ class _MelonBooksGridState extends State<MelonBooksGrid> {
       padding: EdgeInsets.only(
           top: widget.topPadding,
           bottom: widget.bottomPadding,
-          left: 4.0,
-          right: 4.0),
+          left: 8.0,
+          right: 8.0),
       sliver: SliverGrid(
         delegate: SliverChildBuilderDelegate(
           (context, position) {
@@ -64,9 +64,8 @@ class _MelonBooksGridState extends State<MelonBooksGrid> {
   }
 
   Widget _content(position, total, sub, radio) {
-
     List<Widget> children =
-        widget.children != null ? widget.children!.call(position,radio) : [];
+        widget.children != null ? widget.children!.call(position, radio) : [];
 
     String url = "assets/preview.png";
     url = widget.timeline[position]['cover'];
@@ -85,78 +84,70 @@ class _MelonBooksGridState extends State<MelonBooksGrid> {
           //fakeLongEnable: widget.fakeLongEnable,
           active: errorMap[position] == null,
           isBouncing: errorMap[position] == null,
-          child: ClipRRect(
-              /*borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(position == 0 ? 24 : 6),
-                topRight: Radius.circular(position ==
-                        (widget.timeline.length > 1
-                            ? (widget.timeline.length >= radio
-                                    ? (radio - 1)
-                                    : widget.timeline.length - 1
-                                //: (radio - (radio - 1))
-                                )
-                            : 0)
-                    ? 24
-                    : 6),
-                bottomLeft: Radius.circular(
-                    position == (total - (sub != 0 ? sub : radio)) ? 24 : 6),
-                bottomRight: Radius.circular(
-                    position == (total - sub - 1) || position == total - 1
-                        ? 24
-                        : 6),
+          child: Container(
+            margin: const EdgeInsets.only(left: 5,right: 5,top: 5,bottom: 5),
+              decoration: BoxDecoration(
+                //color: Colors.red,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: _theme.onColor().withOpacity(0.1),
+                    spreadRadius: 3,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3), // changes position of shadow
+                  ),
+                ],
               ),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: widget.children != null
+                        ? children
+                        : [
+                            FadeInImage.assetNetwork(
+                              placeholder: _theme.isDark()
+                                  ? 'assets/white_loading.gif'
+                                  : 'assets/black_loading.gif',
+                              fadeInDuration: const Duration(milliseconds: 200),
+                              image: url,
+                              imageErrorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                                errorMap[position] = true;
 
-               */
-
-              borderRadius: BorderRadius.circular(16),
-              child: Stack(
-                fit: StackFit.expand,
-                children: widget.children != null
-                    ? children
-                    : [
-                        FadeInImage.assetNetwork(
-                          placeholder: _theme.isDark()
-                              ? 'assets/white_loading.gif'
-                              : 'assets/black_loading.gif',
-                          fadeInDuration: const Duration(milliseconds: 200),
-                          image: url,
-                          imageErrorBuilder: (BuildContext context,
-                              Object exception, StackTrace? stackTrace) {
-                            errorMap[position] = true;
-
-                            return Container(
-                              color: _theme.onColor().withOpacity(0.2),
-                              width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.height,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    CupertinoIcons.xmark_seal_fill,
-                                    color: _theme.textColor(),
-                                    size: 50,
+                                return Container(
+                                  color: _theme.onColor().withOpacity(0.2),
+                                  width: MediaQuery.of(context).size.width,
+                                  height: MediaQuery.of(context).size.height,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        CupertinoIcons.xmark_seal_fill,
+                                        color: _theme.textColor(),
+                                        size: 50,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      Text(
+                                        "ไม่พบข้อมูล",
+                                        style: GoogleFonts.itim(
+                                            color: _theme.textColor()),
+                                      )
+                                    ],
                                   ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    "ไม่พบข้อมูล",
-                                    style: GoogleFonts.itim(
-                                        color: _theme.textColor()),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                          fit: BoxFit.cover,
-                        ),
-                      ],
-              )),
+                                );
+                              },
+                              fit: BoxFit.cover,
+                            ),
+                          ],
+                  ))),
         );
       },
     );
   }
 }
 
-typedef MelonBooksGridChildren = List<Widget> Function(int position,int radio);
+typedef MelonBooksGridChildren = List<Widget> Function(int position, int radio);

@@ -115,25 +115,24 @@ class _BooksLibraryPageState extends State<BooksLibraryPage> {
             top: false,
             bottom: false,
             child: Container(
-              child:MelonTemplate(
-                title: "ชั้นหนังสือ",
-                titleOnTap: () {
-                  _scrollController!.animateTo(-100,
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.linear);
-                },
-                trailingWidget: MelonRefreshButton(
-                    isLoading: state is MainBooksLoadingState,
-                    callback: () {
-                      if (state is MainBooksState) {
-                        context.read<MainCubit>().books(context: context);
-                      }
-                    }),
-                //leadingWidget: MelonBackButton(),
-                scrollController: _scrollController,
-                sliverLayout: _sliverHub(state),
-              )
-            )));
+                child: MelonTemplate(
+              title: "ชั้นหนังสือ",
+              titleOnTap: () {
+                _scrollController!.animateTo(-100,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.linear);
+              },
+              trailingWidget: MelonRefreshButton(
+                  isLoading: state is MainBooksLoadingState,
+                  callback: () {
+                    if (state is MainBooksState) {
+                      context.read<MainCubit>().books(context: context);
+                    }
+                  }),
+              //leadingWidget: MelonBackButton(),
+              scrollController: _scrollController,
+              sliverLayout: _sliverHub(state),
+            ))));
   }
 
   Widget _sliverHub(state) {
@@ -157,7 +156,7 @@ class _BooksLibraryPageState extends State<BooksLibraryPage> {
       //fixWidth: 200,
       //topPadding: 12,
       callback: (data) {
-        MelonRouter.push(context: context, path:"/book/${data['id']}");
+        MelonRouter.push(context: context, path: "/book/${data['id']}");
       },
       children: (int position, int radio) {
         dynamic data = timeline[position];
@@ -183,15 +182,16 @@ class _BooksLibraryPageState extends State<BooksLibraryPage> {
     double content_width = item_width - image_width;
 
     double item_height = item_width / 1.7;
-
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
+          color: _theme!.backgroundColor(),
+          margin: const EdgeInsets.only(left: 0),
           padding: const EdgeInsets.only(left: 0, bottom: 0, right: 0),
           child: Row(
             children: [
               Container(
-                  width: image_width,
+                  width: image_width - 8,
                   height: item_height,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(0),
@@ -233,7 +233,7 @@ class _BooksLibraryPageState extends State<BooksLibraryPage> {
               Container(
                   padding: const EdgeInsets.only(
                       left: 16, right: 16, top: 22, bottom: 0),
-                  width: content_width,
+                  width: content_width - 10,
                   height: item_height,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -271,105 +271,7 @@ class _BooksLibraryPageState extends State<BooksLibraryPage> {
                     ],
                   ))
             ],
-          )
-          /*
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 70,
-                    width: 70,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: FadeInImage.assetNetwork(
-                        placeholder: 'assets/preview.png',
-                        fadeInDuration: const Duration(milliseconds: 200),
-                        image: data['cover'],
-                          imageScale:1.0,
-                        imageErrorBuilder: (BuildContext context,
-                            Object exception, StackTrace? stackTrace) {
-                          return Container(
-                            color: _theme!.onColor().withOpacity(0.2),
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  CupertinoIcons.xmark_seal_fill,
-                                  color: _theme!.textColor(),
-                                  size: 50,
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  "ไม่พบข้อมูล",
-                                  style: GoogleFonts.itim(
-                                      color: _theme!.textColor()),
-                                )
-                              ],
-                            ),
-                          );
-                        },
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  AutoSizeText(
-                    data['name'] ?? "",
-                    maxLines: 1,
-                    maxFontSize: 18,
-                    minFontSize: 12,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.itim(
-                        color: _theme!.textColor().withOpacity(0.9)),
-                  ),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  AutoSizeText(
-                    "@${data['artist']}",
-                    maxLines: 1,
-                    maxFontSize: 16,
-                    minFontSize: 10,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.itim(
-                        color: _theme!.textColor().withOpacity(0.9)),
-                  ),
-                  const SizedBox(
-                    height: 4,
-                  ),
-                  AutoSizeText(
-                    "${data['language']}",
-                    maxLines: 1,
-                    maxFontSize: 18,
-                    minFontSize: 12,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.itim(
-                        fontWeight: FontWeight.normal,
-                        color: _theme!.isDark()
-                            ? CupertinoColors.systemYellow
-                            : CupertinoColors.systemBlue),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-
-         */
-          ),
+          )),
     );
   }
 }
