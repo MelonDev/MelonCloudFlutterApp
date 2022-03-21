@@ -441,6 +441,7 @@ class _TweetPageState extends State<TweetPage> {
                               for (String photo in photos){
                                 String item = "$photo:orig";
                                 items.add(item);
+
                               }
                               String photosString = items.join('@');
                               String positionString = sPosition.toString();
