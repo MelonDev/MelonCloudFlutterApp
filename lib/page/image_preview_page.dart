@@ -42,6 +42,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
     _photos = widget.photos.split('@');
     _pageController = PageController(initialPage: _initialPage);
     _pageController.addListener(_selecting);
+    currentIndex = _initialPage;
   }
 
   void _selecting() {
@@ -215,7 +216,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
             disableGestures: false,
             controller: viewController,
             initialScale: PhotoViewComputedScale.contained * 1,
-            minScale: PhotoViewComputedScale.contained * 0.5,
+            minScale: PhotoViewComputedScale.contained * 0.8,
             maxScale: PhotoViewComputedScale.covered * 4,
           );
         },
