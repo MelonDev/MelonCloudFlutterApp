@@ -32,7 +32,6 @@ dependencies:
   photo_view: ^0.13.0
   smooth_page_indicator: ^1.0.0+2
   shared_preferences: ^2.0.0-nullsafety
-  flutter_dotenv: ^5.0.2
 
   flutter_acrylic: ^1.0.0+1
   url_strategy: ^0.2.0
