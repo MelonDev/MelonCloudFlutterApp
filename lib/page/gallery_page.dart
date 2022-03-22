@@ -104,7 +104,7 @@ class _GalleryPageState extends State<GalleryPage>
       title: "ไทม์ไลน์",
       data: data,
       type: TimelineType.grid,
-      leadingWidget: _leading(state),
+      //leadingWidget: _leading(state),
       trailingWidget: _trailing(state),
       header: _header(state),
       headerHeight: 20,
@@ -468,6 +468,7 @@ class _GalleryPageState extends State<GalleryPage>
   }
 
   Widget _leading(state) {
+
     return OnHover(
       disableScale: true,
       builder: (isHovered) {
