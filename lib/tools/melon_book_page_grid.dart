@@ -93,14 +93,6 @@ class _MelonBookPageGridState extends State<MelonBookPageGrid> {
                 decoration: BoxDecoration(
                   //color: Colors.red,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: _theme.onColor().withOpacity(0.1),
-                      spreadRadius: 3,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
                 ),
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),

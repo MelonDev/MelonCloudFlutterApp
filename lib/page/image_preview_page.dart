@@ -47,7 +47,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
 
   void _selecting() {
     setState(() {
-      currentIndex = (_pageController.page!).toInt() + 1;
+      currentIndex = (_pageController.page!).toInt();
     });
   }
 

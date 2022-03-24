@@ -4,6 +4,7 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -82,18 +83,37 @@ Future main() async {
   initializeDateFormatting();
   //SharedPreferences? prefs = await SharedPreferences.getInstance();
   //await prefs.setStringList('routes', <String>[]);
-  if (!kIsWeb) {
-    if (Platform.isAndroid) {
-      await FlutterDisplayMode.setHighRefreshRate();
-    }
-  }
+
   setPathUrlStrategy();
   await dotenv.load(fileName: "assets/.env");
-  runApp(const MyApp());
+  runApp( MyApp());
 }
 
-class MyApp extends StatelessWidget  {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  MyApp({Key? key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance?.addPostFrameCallback((_) {
+      fetchAll();
+    });
+  }
+
+  Future<void> fetchAll() async {
+    if (!kIsWeb) {
+      if (Platform.isAndroid) {
+        await FlutterDisplayMode.setHighRefreshRate();
+      }
+    }
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
