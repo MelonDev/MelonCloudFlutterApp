@@ -162,7 +162,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
             ))
         : Container(
             child: Text(
-              "หน้า ${currentIndex} จาก ${_photos.length}",
+              "หน้า ${currentIndex+1} จาก ${_photos.length}",
               style: GoogleFonts.itim(
                   color: Colors.white.withOpacity(0.9), fontSize: 16),
             ),
@@ -190,7 +190,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
 
           PhotoViewController viewController = PhotoViewController();
           double paddingTop =
-              const CupertinoNavigationBar().preferredSize.height;
+              const CupertinoNavigationBar().preferredSize.height + MediaQuery.of(context).viewPadding.top;
           return PhotoViewGalleryPageOptions.customChild(
             child: Hero(
                 tag: _photos[index],

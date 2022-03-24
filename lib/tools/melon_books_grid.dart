@@ -55,7 +55,7 @@ class _MelonBooksGridState extends State<MelonBooksGrid> {
         ),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: radio,
-          childAspectRatio: 1.7,
+          childAspectRatio: 1.6,
           mainAxisSpacing: 2.0,
           crossAxisSpacing: 2.0,
         ),

@@ -81,13 +81,9 @@ class _HashtagsPageState extends State<HashtagsPage> {
           context.read<MainCubit>().hashtag(context: context);
         });
       }
-      if (state is MainHashtagState || state is MainHashtagLoadingState) {
-        return Stack(
-          children: [_timeline(state), _loading(state)],
-        );
-      } else {
-        return Container();
-      }
+      return Stack(
+        children: [_timeline(state), _loading(state)],
+      );
     });
   }
 

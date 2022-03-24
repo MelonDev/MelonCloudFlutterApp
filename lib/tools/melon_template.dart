@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,6 +17,8 @@ class MelonTemplate extends StatefulWidget {
     this.titleOnTap,
     this.sliverLayout,
     this.header,
+    this.headerPadding,
+    this.middle
   }) : super(key: key);
 
   ScrollController? scrollController;
@@ -25,15 +28,14 @@ class MelonTemplate extends StatefulWidget {
   String? title;
   Widget? sliverLayout;
   Widget? header;
+  String? middle;
+  EdgeInsetsGeometry? headerPadding;
 
   @override
   _MelonTemplateState createState() => _MelonTemplateState();
 }
 
 class _MelonTemplateState extends State<MelonTemplate> {
-  late Brightness _brightness;
-  late bool _darkModeOn;
-
   late Color _borderColor;
   late Color _barColor;
 
@@ -48,9 +50,8 @@ class _MelonTemplateState extends State<MelonTemplate> {
 
   @override
   Widget build(BuildContext context) {
-    _brightness = MediaQuery.of(context).platformBrightness;
-    _darkModeOn = _brightness == Brightness.dark;
     MelonThemeData _theme = MelonTheme.of(context);
+
     _barColor = (_theme.isDark() ? const Color.fromARGB(0, 25, 25, 25) : const Color.fromARGB(0, 240, 240, 240)).withOpacity(0.7);
 
     return CustomScrollView(
@@ -62,13 +63,26 @@ class _MelonTemplateState extends State<MelonTemplate> {
           backgroundColor: _barColor,
           leading: widget.leadingWidget,
           trailing: widget.trailingWidget,
+          automaticallyImplyTitle: true,
+          middle: widget.middle != null ? Text(
+            widget.middle!,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.itim(
+                color: _theme.isDark()
+                    ? Colors.white.withOpacity(1)
+                    : Colors.black.withOpacity(1)),
+          ) : null,
           largeTitle: MelonBouncingButton(
             isBouncing: widget.titleOnTap != null,
             callback: widget.titleOnTap,
-            child: Text(
+            child: AutoSizeText(
               widget.title ?? "",
+              maxFontSize: 36,
+              minFontSize: 30,
+              maxLines: 1,
               style: GoogleFonts.itim(
-                  color: _darkModeOn
+                  color: _theme.isDark()
                       ? Colors.white.withOpacity(1)
                       : Colors.black.withOpacity(1)),
             ),
@@ -76,7 +90,7 @@ class _MelonTemplateState extends State<MelonTemplate> {
         ),
         widget.header != null
             ? SliverPadding(
-                padding: const EdgeInsets.only(left: 16, right: 16, top: 10),
+                padding: widget.headerPadding ?? const EdgeInsets.only(left: 16, right: 16, top: 10),
                 sliver: SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                   return widget.header;

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ import 'package:meloncloud_flutter_app/page/hashtag_preview_page.dart';
 import 'package:meloncloud_flutter_app/page/hashtags_page.dart';
 import 'package:meloncloud_flutter_app/page/home_page.dart';
 import 'package:meloncloud_flutter_app/page/image_preview_page.dart';
+import 'package:meloncloud_flutter_app/page/more_page.dart';
 import 'package:meloncloud_flutter_app/page/peoples_page.dart';
 import 'package:meloncloud_flutter_app/page/profile_page.dart';
 import 'package:meloncloud_flutter_app/page/tweet_page.dart';
@@ -47,16 +49,11 @@ final routes = RouteMap(
       return const CupertinoPage(child: EventPage());
     },
     '/tags': (route) => const CupertinoPage(child: HashtagsPage()),
-    '/books': (route) => const CupertinoPage(
-            child: BooksLibraryPage()),
-    '/more': (route) => CupertinoPage(
-            child: Container(
-          color: Colors.purple,
-        )),
-    '/error': (route) => CupertinoPage(child: ErrorPage(callback: (){
-    })),
+    '/books': (route) => const CupertinoPage(child: BooksLibraryPage()),
+    '/more': (route) => const CupertinoPage(child: MorePage()),
+    '/error': (route) => CupertinoPage(child: ErrorPage(callback: () {})),
     '/book/:id': (route) => CupertinoPage(
-        child: BookPage(
+            child: BookPage(
           bookid: route.pathParameters['id']!,
         )),
     '/tweets/:id': (route) => CupertinoPage(
@@ -74,7 +71,7 @@ final routes = RouteMap(
           position: route.queryParameters['position']!,
         )),
     '/hashtags/:name': (route) => CupertinoPage(
-        child: HashtagPreviewPage(
+            child: HashtagPreviewPage(
           name: route.pathParameters['name']!,
         )),
   },
@@ -91,15 +88,16 @@ Future main() async {
     }
   }
   setPathUrlStrategy();
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "assets/.env");
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget  {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+
     return MultiBlocProvider(
       providers: [
         BlocProvider<RouteCubit>(create: (context) => RouteCubit()),
@@ -109,17 +107,11 @@ class MyApp extends StatelessWidget {
         BlocProvider<ProfileCubit>(create: (context) => ProfileCubit()),
         BlocProvider<HashtagsCubit>(create: (context) => HashtagsCubit()),
         BlocProvider<BookLibraryCubit>(create: (context) => BookLibraryCubit()),
-
       ],
       child: Portal(
-        child: CupertinoApp.router(
-          title: "MelonCloud",
-          debugShowCheckedModeBanner: false,
-          routeInformationParser: const RoutemasterParser(),
-          routerDelegate: RoutemasterDelegate(
-            routesBuilder: (context) => routes,
-          ),
-          theme: CupertinoThemeData(
+        child:CupertinoAdaptiveTheme(
+          light: CupertinoThemeData(
+            brightness: Brightness.light,
             primaryColor: CupertinoColors.activeBlue,
             textTheme: CupertinoTextThemeData(
               tabLabelTextStyle: GoogleFonts.itim(fontSize: 14),
@@ -127,7 +119,29 @@ class MyApp extends StatelessWidget {
               navTitleTextStyle: GoogleFonts.itim(fontSize: 24),
             ),
           ),
-        ),
+          dark: CupertinoThemeData(
+            brightness: Brightness.dark,
+            primaryColor: CupertinoColors.activeBlue,
+            textTheme: CupertinoTextThemeData(
+              tabLabelTextStyle: GoogleFonts.itim(fontSize: 14),
+              navLargeTitleTextStyle: GoogleFonts.itim(fontSize: 38),
+              navTitleTextStyle: GoogleFonts.itim(fontSize: 24),
+            ),
+          ),
+          initial: AdaptiveThemeMode.system,
+          builder: (theme) {
+            return CupertinoApp.router(
+              title: "MelonCloud",
+              debugShowCheckedModeBanner: false,
+              routeInformationParser: const RoutemasterParser(),
+              routerDelegate: RoutemasterDelegate(
+                routesBuilder: (context) => routes,
+              ),
+              theme: theme,
+            );
+          },
+        )
+        ,
       ),
     );
   }

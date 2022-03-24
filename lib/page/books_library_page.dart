@@ -62,6 +62,7 @@ class _BooksLibraryPageState extends State<BooksLibraryPage> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MainCubit, MainState>(builder: (context, state) {
+
       String path = Routemaster.of(context).currentRoute.path;
       if (path == "/books" &&
           state is! MainBooksState &&
@@ -74,13 +75,9 @@ class _BooksLibraryPageState extends State<BooksLibraryPage> {
           context.read<MainCubit>().books(context: context);
         });
       }
-      if (state is MainBooksState || state is MainBooksLoadingState) {
-        return Stack(
-          children: [_timeline(state), _loading(state)],
-        );
-      } else {
-        return Container();
-      }
+      return Stack(
+        children: [_timeline(state), _loading(state)],
+      );
     });
   }
 
@@ -182,10 +179,11 @@ class _BooksLibraryPageState extends State<BooksLibraryPage> {
     double content_width = item_width - image_width;
 
     double item_height = item_width / 1.7;
+
     return Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-          color: _theme!.backgroundColor(),
+          color: _theme!.isDark() ? Colors.white.withOpacity(0.1) : Colors.white,
           margin: const EdgeInsets.only(left: 0),
           padding: const EdgeInsets.only(left: 0, bottom: 0, right: 0),
           child: Row(
@@ -232,24 +230,24 @@ class _BooksLibraryPageState extends State<BooksLibraryPage> {
                   )),
               Container(
                   padding: const EdgeInsets.only(
-                      left: 16, right: 16, top: 22, bottom: 0),
+                      left: 16, right: 16, top: 16, bottom: 0),
                   width: content_width - 10,
                   height: item_height,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      AutoSizeText(
                         "${data['name']}",
                         style: GoogleFonts.itim(
                           color: _theme!.textColor(),
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                       ),
                       const SizedBox(height: 6),
-                      Text(
+                      AutoSizeText(
                         "${data['artist']}",
                         style: GoogleFonts.itim(
                           color: _theme!.textColor().withOpacity(0.8),
@@ -259,7 +257,7 @@ class _BooksLibraryPageState extends State<BooksLibraryPage> {
                         maxLines: 1,
                       ),
                       const SizedBox(height: 6),
-                      Text(
+                      AutoSizeText(
                         "ภาษา: ${data['language']}",
                         style: GoogleFonts.itim(
                           color: _theme!.textColor().withOpacity(0.8),
