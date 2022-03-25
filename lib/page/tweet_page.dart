@@ -697,6 +697,8 @@ class _TweetPageState extends State<TweetPage> {
 
                  */
                   } else {
+                    context.read<TweetCubit>().like(state);
+
                     //context
                     //    .read<TweetCubit>()
                     //    .likeTweet(state, state.data['tweet']['id']);

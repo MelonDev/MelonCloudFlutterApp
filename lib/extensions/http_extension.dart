@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -22,7 +23,7 @@ Map<String, String> _postHeader() {
 
 Map<String, String> _formHeader() {
   return {
-    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    'Content-Type': 'application/x-www-form-urlencoded',
     'Charset': 'utf-8'
   };
 }
@@ -81,6 +82,31 @@ Future<HttpResponse> http_get(Uri uri,
     data = json.decode(raw);
   }
   return HttpResponse(responses.statusCode, data);
+}
+
+Future<HttpResponse> http_post_urlencoded(Uri uri,
+    {Map<String, String>? headers,
+      Map<String, String>? body,
+      MelonCloudAuthorization? authorization}) async {
+  final dio = Dio();
+
+  final responses = await dio.post(
+    uri.toString(),
+    data: body,
+    options: Options(contentType: Headers.formUrlEncodedContentType),
+  );
+
+  dynamic data;
+  if (responses.statusCode != 200) {
+    data = responses.data;
+  } else if (responses.statusCode == 401) {
+    if (authorization != null) {
+      await http_authorization(authorization);
+    }
+  } else {
+    data = responses.data;
+  }
+  return HttpResponse(responses.statusCode ?? 400, data);
 }
 
 Future<HttpResponse> http_post(Uri uri,

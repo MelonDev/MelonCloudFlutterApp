@@ -20,6 +20,9 @@ class TweetCubit extends Cubit<TweetBaseState> {
     emit(LoadingTweetState());
 
     var params = _params();
+    params.addAll({
+      "translate": "true"
+    });
 
     Uri uri = Uri.https(_server, '/$_path/tweets/$tweetid', params);
 
@@ -30,7 +33,6 @@ class TweetCubit extends Cubit<TweetBaseState> {
       emit(TweetFailureState());
     }
   }
-
 
   openTwitterProfile(String id) async {
     String url = 'https://twitter.com/intent/user?user_id=$id';
@@ -49,10 +51,52 @@ class TweetCubit extends Cubit<TweetBaseState> {
 
   openTweet(String id) async {
     String url = 'https://twitter.com/_MelonDev_/status/$id';
-    print(url);
     if (await canLaunch(url)) {
       print("canLaunch");
       await launch(url, forceSafariVC: false, forceWebView: false);
+    }
+  }
+
+  /*
+  secretLikeTweet(LoadedTweetDetailState state, String id,
+      {Function function}) async {
+    emit(LoadingTweetDetailState(previousState: state));
+    Map<String, String> headers = {
+      'Content-Type': 'application/json;charset=UTF-8',
+      'Charset': 'utf-8'
+    };
+
+    Uri uri = Uri.https(
+        'melondev-cloud.herokuapp.com', '/api/twitter/$id/secret_like');
+
+    dynamic data = await _loadData(uri, headers);
+
+    if (function != null) {
+      function.call();
+    }
+
+    emit(LoadedTweetDetailState(data));
+  }
+
+   */
+
+  like(TweetState state) async {
+    emit(LoadingTweetState(previousState:state));
+
+    var params = _params();
+    params.addAll({
+      "tweetid": "${state.data['id']}",
+      "action": "LIKE",
+      "translate": "true"
+    });
+
+    Uri uri = Uri.https(_server, '/$_path/action');
+
+    HttpResponse response = await http_post_urlencoded(uri,body: params);
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      emit(TweetState(response.data['data']));
+    } else {
+      emit(TweetFailureState());
     }
   }
 
