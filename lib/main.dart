@@ -8,7 +8,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -87,7 +86,6 @@ Future main() async {
   //await prefs.setStringList('routes', <String>[]);
 
   setPathUrlStrategy();
-  await dotenv.load(fileName: "assets/.env");
   runApp(MyApp());
 }
 
