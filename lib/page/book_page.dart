@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:meloncloud_flutter_app/page/error_page.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meloncloud_flutter_app/tools/melon_back_button.dart';
+import 'package:meloncloud_flutter_app/tools/melon_blury_navigation_bar.dart';
 import 'package:meloncloud_flutter_app/tools/melon_book_page_grid.dart';
 import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_loading_widget.dart';
@@ -93,7 +94,7 @@ class _BookPageState extends State<BookPage> {
                   //leadingWidget: MelonBackButton(),
                   scrollController: _scrollController,
                   sliverLayout: _contentState(state),
-                ),_loading(state)]
+                ),_loading(state),MelonBluryNavigationBar.get(context)]
             ),
           )
         );

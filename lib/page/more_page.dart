@@ -41,11 +41,10 @@ class _MorePageState extends State<MorePage> {
 
     _menu = updateMenu();
 
-
     super.didChangeDependencies();
   }
 
-  List<SettingMenu> updateMenu(){
+  List<SettingMenu> updateMenu() {
     return [
       SettingMenuHeader(title: "ธีม"),
       SettingMenuItem(
@@ -72,9 +71,9 @@ class _MorePageState extends State<MorePage> {
                 _theme!.changingToSystemTheme();
               },
               offAction: () {
-                if (_theme!.isDark()){
+                if (_theme!.isDark()) {
                   _theme!.changingTheme(brightness: Brightness.dark);
-                }else {
+                } else {
                   _theme!.changingTheme(brightness: Brightness.light);
                 }
               })),
@@ -201,9 +200,12 @@ class _MorePageState extends State<MorePage> {
         _itemContent(menu),
         menu.bottomOfGroup == false && menu.group == true
             ? Container(
-                margin: const EdgeInsets.only(top: 0, left: 68, right: 12),
-                color: _theme!.onColor().withOpacity(0.2),
-                height: 1)
+                color: _theme!.onColor().withOpacity(0.05),
+            margin: const EdgeInsets.only(top: 0, left: 12, right: 12),
+            child: Container(
+                    margin: const EdgeInsets.only(top: 0, left: 58, right: 0),
+                    color: _theme!.onColor().withOpacity(0.12),
+                    height: 1.2))
             : const SizedBox()
       ]);
     } else {
@@ -325,7 +327,6 @@ class _MorePageState extends State<MorePage> {
             child: CupertinoSwitch(
                 value: action.isEnabled,
                 onChanged: (bool enabled) {
-
                   if (enabled) {
                     action.onAction?.call();
                   } else {

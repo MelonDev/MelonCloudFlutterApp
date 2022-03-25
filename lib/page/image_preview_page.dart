@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
+import 'package:meloncloud_flutter_app/tools/melon_blury_navigation_bar.dart';
 import 'package:meloncloud_flutter_app/tools/melon_icon_button.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -84,6 +85,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
             ),
             child: Container(color: _theme!.backgroundColor(), child: _area()),
           ),
+          MelonBluryNavigationBar.get(context,brightness: Brightness.dark)
         ],
       ),
     );

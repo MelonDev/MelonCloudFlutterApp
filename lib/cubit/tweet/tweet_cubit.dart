@@ -5,10 +5,11 @@ import 'package:meloncloud_flutter_app/environment/app_environment.dart';
 import 'package:meloncloud_flutter_app/extensions/http_extension.dart';
 import 'package:meta/meta.dart';
 import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 part 'tweet_state.dart';
 
-class TweetCubit extends Cubit<TweetState> {
+class TweetCubit extends Cubit<TweetBaseState> {
   final String _path = "api/v3/twitter";
   final String _server = AppEnvironment.server;
   final String _token = AppEnvironment.token;
@@ -24,9 +25,34 @@ class TweetCubit extends Cubit<TweetState> {
 
     HttpResponse response = await http_get(uri);
     if (response.statusCode == 200) {
-      emit(LoadedTweetState(response.data['data']));
+      emit(TweetState(response.data['data']));
     } else {
       emit(TweetFailureState());
+    }
+  }
+
+
+  openTwitterProfile(String id) async {
+    String url = 'https://twitter.com/intent/user?user_id=$id';
+
+    if (await canLaunch(url)) {
+      await launch(url, forceSafariVC: false, forceWebView: false);
+    }
+  }
+
+  openSearchTwitterProfile(String id) async {
+    String url = 'https://twitter.com/search?q=%40$id&f=live';
+    if (await canLaunch(url)) {
+      await launch(url, forceSafariVC: false, forceWebView: false);
+    }
+  }
+
+  openTweet(String id) async {
+    String url = 'https://twitter.com/_MelonDev_/status/$id';
+    print(url);
+    if (await canLaunch(url)) {
+      print("canLaunch");
+      await launch(url, forceSafariVC: false, forceWebView: false);
     }
   }
 

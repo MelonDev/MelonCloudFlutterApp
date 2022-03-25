@@ -10,7 +10,7 @@ class MelonBooksGrid extends StatefulWidget {
       {Key? key,
       required this.timeline,
       this.callback,
-      this.topPadding = 4.0,
+      this.topPadding = 12.0,
       this.bottomPadding = 104.0,
       this.children})
       : super(key: key);
@@ -91,7 +91,7 @@ class _MelonBooksGridState extends State<MelonBooksGrid> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: _theme.onColor().withOpacity(0.1),
+                    color: _theme.onColor().withOpacity(_theme.isDark() ? 0.0 :0.1),
                     spreadRadius: 3,
                     blurRadius: 5,
                     offset: const Offset(0, 3), // changes position of shadow

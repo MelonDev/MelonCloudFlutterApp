@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:meloncloud_flutter_app/page/error_page.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meloncloud_flutter_app/tools/melon_activity_indicator.dart';
+import 'package:meloncloud_flutter_app/tools/melon_blury_navigation_bar.dart';
 import 'package:meloncloud_flutter_app/tools/melon_bouncing_button.dart';
 import 'package:meloncloud_flutter_app/tools/melon_loading_sliver_grid.dart';
 import 'package:meloncloud_flutter_app/tools/melon_loading_widget.dart';
@@ -94,27 +95,33 @@ class _PeoplesPageState extends State<PeoplesPage> {
     }
     return Container(
         color: _theme!.backgroundColor(),
-        child: SafeArea(
-            top: false,
-            bottom: false,
-            child: MelonTemplate(
-              title: "รายชื่อทั้งหมด",
-              titleOnTap: () {
-                _scrollController!.animateTo(-100,
-                    duration: Duration(milliseconds: 500),
-                    curve: Curves.linear);
-              },
-              trailingWidget: MelonRefreshButton(
-                  isLoading: state is PeoplesLoadingState,
-                  callback: () {
-                    if (state is PeoplesState) {
-                      context.read<PeoplesCubit>().load();
-                    }
-                  }),
-              leadingWidget: MelonBackButton(),
-              scrollController: _scrollController,
-              sliverLayout: _sliverHub(state),
-            )));
+        child: Stack(
+          fit: StackFit.loose,
+          children: [
+            SafeArea(
+                top: false,
+                bottom: false,
+                child: MelonTemplate(
+                  title: "รายชื่อทั้งหมด",
+                  titleOnTap: () {
+                    _scrollController!.animateTo(-100,
+                        duration: Duration(milliseconds: 500),
+                        curve: Curves.linear);
+                  },
+                  trailingWidget: MelonRefreshButton(
+                      isLoading: state is PeoplesLoadingState,
+                      callback: () {
+                        if (state is PeoplesState) {
+                          context.read<PeoplesCubit>().load();
+                        }
+                      }),
+                  leadingWidget: MelonBackButton(),
+                  scrollController: _scrollController,
+                  sliverLayout: _sliverHub(state),
+                )),
+            MelonBluryNavigationBar.get(context)
+          ]
+        ));
   }
 
   Widget _loading(state) {

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -31,6 +32,7 @@ import 'package:meloncloud_flutter_app/page/peoples_page.dart';
 import 'package:meloncloud_flutter_app/page/profile_page.dart';
 import 'package:meloncloud_flutter_app/page/tweet_page.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
+import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'cubit/book_library/book_library_cubit.dart';
@@ -86,7 +88,7 @@ Future main() async {
 
   setPathUrlStrategy();
   await dotenv.load(fileName: "assets/.env");
-  runApp( MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -97,6 +99,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late Brightness _brightness;
+
+
   @override
   void initState() {
     super.initState();
@@ -105,19 +110,54 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
   Future<void> fetchAll() async {
     if (!kIsWeb) {
       if (Platform.isAndroid) {
         await FlutterDisplayMode.setHighRefreshRate();
+        Brightness brightness =
+            SchedulerBinding.instance!.window.platformBrightness;
+        _brightness = brightness;
+        AdaptiveThemeMode? savedThemeMode = await AdaptiveTheme.getThemeMode();
+        if (savedThemeMode != null) {
+          if (savedThemeMode == AdaptiveThemeMode.dark) {
+            brightness = Brightness.dark;
+          }
+          if (savedThemeMode == AdaptiveThemeMode.light) {
+            brightness = Brightness.light;
+          }
+        }
+
+        updateUI(brightness: brightness);
       }
     }
 
     setState(() {});
   }
 
+  updateUI({required Brightness brightness}) {
+    //Setting SysemUIOverlay
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        //systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: brightness == Brightness.dark ?  Brightness.light:Brightness.dark,
+        systemNavigationBarColor: Colors.white.withOpacity(0.01),
+        //systemNavigationBarDividerColor: Colors.white.withOpacity(0.1),
+        systemNavigationBarDividerColor: brightness == Brightness.dark ? Colors.transparent : null,
+        //systemNavigationBarIconBrightness: Brightness.light,
+        statusBarIconBrightness: brightness == Brightness.dark ?  Brightness.light:Brightness.dark));
+
+    //Setting SystmeUIMode
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+        overlays: [SystemUiOverlay.top,SystemUiOverlay.bottom]);
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return MultiBlocProvider(
       providers: [
         BlocProvider<RouteCubit>(create: (context) => RouteCubit()),
@@ -129,7 +169,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider<BookLibraryCubit>(create: (context) => BookLibraryCubit()),
       ],
       child: Portal(
-        child:CupertinoAdaptiveTheme(
+        child: CupertinoAdaptiveTheme(
           light: CupertinoThemeData(
             brightness: Brightness.light,
             primaryColor: CupertinoColors.activeBlue,
@@ -150,6 +190,8 @@ class _MyAppState extends State<MyApp> {
           ),
           initial: AdaptiveThemeMode.system,
           builder: (theme) {
+            //print(theme);
+            updateUI(brightness: theme.brightness ?? _brightness);
             return CupertinoApp.router(
               title: "MelonCloud",
               debugShowCheckedModeBanner: false,
@@ -160,8 +202,7 @@ class _MyAppState extends State<MyApp> {
               theme: theme,
             );
           },
-        )
-        ,
+        ),
       ),
     );
   }
