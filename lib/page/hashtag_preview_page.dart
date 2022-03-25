@@ -13,6 +13,7 @@ import 'package:meloncloud_flutter_app/tools/melon_timeline.dart';
 import 'package:routemaster/routemaster.dart';
 
 import '../tools/melon_back_button.dart';
+import '../tools/melon_blury_navigation_bar.dart';
 
 class HashtagPreviewPage extends StatefulWidget {
   HashtagPreviewPage({Key? key,required this.name}) : super(key: key);
@@ -76,7 +77,7 @@ class _HashtagPreviewPageState extends State<HashtagPreviewPage> {
       return Container(
         color: _theme!.backgroundColor(),
         child: Stack(
-          children: [_layout(state), _loading(state)],
+          children: [_layout(state), _loading(state),MelonBluryNavigationBar.get(context)],
         )
       );
     });

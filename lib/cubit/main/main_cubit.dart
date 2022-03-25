@@ -20,6 +20,8 @@ part 'main_hashtag_state.dart';
 
 part 'main_books_state.dart';
 
+part 'main_more_state.dart';
+
 class MainCubit extends Cubit<MainState> {
   final String _path = "api/v3/twitter";
   final String _server = AppEnvironment.server;
@@ -69,8 +71,9 @@ class MainCubit extends Cubit<MainState> {
         previousPage: fabric['previous_page'],
         nextPage: fabric['next_page'],
       );
+      await MelonRouter.push_async(context: context, path: '/home');
       emit(state);
-      MelonRouter.push_async(context: context, path: '/home');
+
     } else {
       emit(MainHomeFailureState(previousState: previousState));
     }
@@ -113,8 +116,9 @@ class MainCubit extends Cubit<MainState> {
         previousPage: fabric['previous_page'],
         nextPage: fabric['next_page'],
       );
+      await MelonRouter.push_async(context: context, path: '/events');
       emit(state);
-      MelonRouter.push_async(context: context, path: '/events');
+
     } else {
       emit(MainEventFailureState(previousState: previousState));
     }
@@ -167,9 +171,9 @@ class MainCubit extends Cubit<MainState> {
         dateStart: fabric['time_range']['start'],
         dateEnd: fabric['time_range']['end'],
       );
+      await MelonRouter.push_async(context: context, path: '/tags');
       emit(state);
 
-      MelonRouter.push_async(context: context, path: '/tags');
     } else if (response.statusCode == 400) {
       if (previousState != null) {
         emit(previousState);
@@ -181,8 +185,8 @@ class MainCubit extends Cubit<MainState> {
 
   books(
       {required BuildContext context,
-        MainBooksState? previousState,
-        String? command}) async {
+      MainBooksState? previousState,
+      String? command}) async {
     emit(MainBooksLoadingState(previousState: previousState));
 
     Map<String, String> targets = {};
@@ -203,7 +207,7 @@ class MainCubit extends Cubit<MainState> {
     if (response.statusCode == 200) {
       dynamic responseData = response.data['data'];
       List<dynamic> timeline =
-      previousState?.timeline != null ? previousState!.timeline : [];
+          previousState?.timeline != null ? previousState!.timeline : [];
 
       timeline.addAll(responseData);
       dynamic fabric = response.data['fabric'];
@@ -213,10 +217,10 @@ class MainCubit extends Cubit<MainState> {
         currentPage: fabric['current_page'],
         previousPage: fabric['previous_page'],
         nextPage: fabric['next_page'],
-
       );
+      await MelonRouter.push_async(context: context, path: '/books');
       emit(state);
-      MelonRouter.push_async(context: context, path: '/books');
+
     } else if (response.statusCode == 400) {
       if (previousState != null) {
         emit(previousState);
@@ -224,6 +228,13 @@ class MainCubit extends Cubit<MainState> {
     } else {
       emit(MainBooksFailureState(previousState: previousState));
     }
+  }
+
+  more({required BuildContext context}) async {
+    emit(MainMoreLoadingState(previousState: null));
+    await MelonRouter.push_async(context: context, path: '/more');
+    emit(MainMoreState());
+
   }
 
   Map<String, String> _params({Map<String, String>? targets}) {

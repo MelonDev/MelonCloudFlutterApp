@@ -15,6 +15,7 @@ import 'package:meloncloud_flutter_app/tools/melon_template.dart';
 import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
 import 'package:routemaster/routemaster.dart';
 
+import '../tools/melon_blury_navigation_bar.dart';
 import '../tools/on_hover.dart';
 import 'error_page.dart';
 
@@ -81,13 +82,12 @@ class _HashtagsPageState extends State<HashtagsPage> {
           context.read<MainCubit>().hashtag(context: context);
         });
       }
-      if (state is MainHashtagState || state is MainHashtagLoadingState) {
-        return Stack(
-          children: [_timeline(state), _loading(state)],
-        );
-      } else {
-        return Container();
-      }
+      return Container(
+        color: _theme!.backgroundColor(),
+          child: Stack(
+        fit: StackFit.loose,
+        children: [_timeline(state), _loading(state)],
+      ));
     });
   }
 
@@ -143,7 +143,7 @@ class _HashtagsPageState extends State<HashtagsPage> {
           },
           header: MediaQuery.of(context).size.width > 500
               ? Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [_segmentedControl(state)],
                 )
               : _segmentedControl(state),
@@ -161,8 +161,10 @@ class _HashtagsPageState extends State<HashtagsPage> {
 
   Widget _segmentedControl(state) {
     return Container(
-      margin: const EdgeInsets.only(top:20),
-      width: MediaQuery.of(context).size.width > 500 ? 500 : MediaQuery.of(context).size.width,
+      margin: const EdgeInsets.only(top: 20),
+      width: MediaQuery.of(context).size.width > 500
+          ? 500
+          : MediaQuery.of(context).size.width,
       child: CupertinoSlidingSegmentedControl(
           thumbColor: _theme!.textColor().withOpacity(0.7),
           //thumbColor: CupertinoColors.systemYellow,
@@ -197,7 +199,8 @@ class _HashtagsPageState extends State<HashtagsPage> {
       limitWidth: 500,
       cardTapping: (value) {
         setState(() {});
-        MelonRouter.push(context: context, path: "/hashtags/${data[value]['name']}");
+        MelonRouter.push(
+            context: context, path: "/hashtags/${data[value]['name']}");
       },
     );
   }

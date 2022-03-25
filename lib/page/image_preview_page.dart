@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
+import 'package:meloncloud_flutter_app/tools/melon_blury_navigation_bar.dart';
 import 'package:meloncloud_flutter_app/tools/melon_icon_button.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
@@ -47,7 +48,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
 
   void _selecting() {
     setState(() {
-      currentIndex = (_pageController.page!).toInt() + 1;
+      currentIndex = (_pageController.page!).toInt();
     });
   }
 
@@ -84,6 +85,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
             ),
             child: Container(color: _theme!.backgroundColor(), child: _area()),
           ),
+          MelonBluryNavigationBar.get(context,brightness: Brightness.dark)
         ],
       ),
     );
@@ -162,7 +164,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
             ))
         : Container(
             child: Text(
-              "หน้า ${currentIndex} จาก ${_photos.length}",
+              "หน้า ${currentIndex+1} จาก ${_photos.length}",
               style: GoogleFonts.itim(
                   color: Colors.white.withOpacity(0.9), fontSize: 16),
             ),
@@ -190,7 +192,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
 
           PhotoViewController viewController = PhotoViewController();
           double paddingTop =
-              const CupertinoNavigationBar().preferredSize.height;
+              const CupertinoNavigationBar().preferredSize.height + MediaQuery.of(context).viewPadding.top;
           return PhotoViewGalleryPageOptions.customChild(
             child: Hero(
                 tag: _photos[index],

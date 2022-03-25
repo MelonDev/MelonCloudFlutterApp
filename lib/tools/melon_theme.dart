@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 
 @immutable
@@ -5,8 +6,13 @@ class MelonThemeData {
 
   late Brightness _brightness;
   late MediaQueryData _mediaQuery;
+  late CupertinoAdaptiveThemeManager _adaptiveTheme;
+  late BuildContext _context;
 
-  bool isDark({Brightness? brightness}) => (brightness ?? _brightness) == Brightness.dark;
+  //bool isDark({Brightness? brightness}) => (brightness ?? _brightness) == Brightness.dark;
+  bool isDark({Brightness? brightness}) {
+    return (brightness ?? _adaptiveTheme.brightness) == Brightness.dark;
+  }
 
   Size size() => _mediaQuery.size;
 
@@ -47,10 +53,26 @@ class MelonThemeData {
   Color popButtonColor({Brightness? brightness}) => isDark(brightness: brightness) ? Colors.white.withOpacity(0.2) : Colors.white.withOpacity(1.0);
   Color popButtonShadowColor({Brightness? brightness}) => isDark(brightness: brightness) ? Colors.white.withOpacity(0.0) : Colors.black.withOpacity(0.2);
 
+  changingTheme({required Brightness brightness}) {
+    if (brightness == Brightness.dark){
+      _adaptiveTheme.setDark();
+    }
+    if (brightness == Brightness.light){
+      _adaptiveTheme.setLight();
+    }
+  }
+
+  changingToSystemTheme() {
+    _adaptiveTheme.setSystem();
+  }
 
   MelonThemeData of(BuildContext context) {
     _mediaQuery = MediaQuery.of(context);
-    _brightness = _mediaQuery.platformBrightness;
+    //_brightness = _mediaQuery.platformBrightness;
+    _adaptiveTheme = CupertinoAdaptiveTheme.of(context);
+
+    _context = context;
+
     return this;
   }
 

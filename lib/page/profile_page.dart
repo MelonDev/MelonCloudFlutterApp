@@ -17,6 +17,7 @@ import 'package:meloncloud_flutter_app/tools/on_hover.dart';
 import 'package:routemaster/routemaster.dart';
 
 import '../cubit/profile/profile_cubit.dart';
+import '../tools/melon_blury_navigation_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({Key? key, required this.account}) : super(key: key);
@@ -367,6 +368,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   CupertinoNavigationBar().preferredSize.height,
             ),
           ),
+          MelonBluryNavigationBar.get(context)
         ],
       ),
     );
@@ -427,6 +429,7 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (bool isHovered) {
         return MelonBouncingButton(
           callback: () {
+            MelonRouter.push(context: context, path: "/hashtags/$title");
             /*Navigator.push(
             context,
             CupertinoPageRoute<CupertinoPageScaffold>(

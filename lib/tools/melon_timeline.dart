@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -176,8 +177,11 @@ class _MelonTimelineState extends State<MelonTimeline> {
                 duration: Duration(milliseconds: 500), curve: Curves.linear);
           }
         },
-        child: Text(
+        child: AutoSizeText(
           widget.title ?? "",
+          maxFontSize: 36,
+          minFontSize: 30,
+          maxLines: 1,
           style: GoogleFonts.itim(color: _theme.textColor()),
         ),
       ),

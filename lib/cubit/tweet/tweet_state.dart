@@ -1,24 +1,24 @@
 part of 'tweet_cubit.dart';
 
 @immutable
-abstract class TweetState {}
+abstract class TweetBaseState {}
 
-class TweetInitialState extends TweetState {}
+class TweetInitialState extends TweetBaseState {}
 
-class LoadingTweetState extends TweetState {
-  LoadedTweetState? previousState;
+class LoadingTweetState extends TweetBaseState {
+  TweetState? previousState;
 
   LoadingTweetState({this.previousState});
 }
 
-class TweetFailureState extends TweetState {
-  LoadedTweetState? previousState;
+class TweetFailureState extends TweetBaseState {
+  TweetState? previousState;
 
   TweetFailureState({this.previousState});
 }
 
-class LoadedTweetState extends TweetState {
+class TweetState extends TweetBaseState {
   dynamic data;
 
-  LoadedTweetState(this.data);
+  TweetState(this.data);
 }

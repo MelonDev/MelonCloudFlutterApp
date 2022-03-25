@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -23,10 +27,12 @@ import 'package:meloncloud_flutter_app/page/hashtag_preview_page.dart';
 import 'package:meloncloud_flutter_app/page/hashtags_page.dart';
 import 'package:meloncloud_flutter_app/page/home_page.dart';
 import 'package:meloncloud_flutter_app/page/image_preview_page.dart';
+import 'package:meloncloud_flutter_app/page/more_page.dart';
 import 'package:meloncloud_flutter_app/page/peoples_page.dart';
 import 'package:meloncloud_flutter_app/page/profile_page.dart';
 import 'package:meloncloud_flutter_app/page/tweet_page.dart';
 import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
+import 'package:meloncloud_flutter_app/tools/melon_theme.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'cubit/book_library/book_library_cubit.dart';
@@ -46,16 +52,11 @@ final routes = RouteMap(
       return const CupertinoPage(child: EventPage());
     },
     '/tags': (route) => const CupertinoPage(child: HashtagsPage()),
-    '/books': (route) => const CupertinoPage(
-            child: BooksLibraryPage()),
-    '/more': (route) => CupertinoPage(
-            child: Container(
-          color: Colors.purple,
-        )),
-    '/error': (route) => CupertinoPage(child: ErrorPage(callback: (){
-    })),
+    '/books': (route) => const CupertinoPage(child: BooksLibraryPage()),
+    '/more': (route) => const CupertinoPage(child: MorePage()),
+    '/error': (route) => CupertinoPage(child: ErrorPage(callback: () {})),
     '/book/:id': (route) => CupertinoPage(
-        child: BookPage(
+            child: BookPage(
           bookid: route.pathParameters['id']!,
         )),
     '/tweets/:id': (route) => CupertinoPage(
@@ -73,7 +74,7 @@ final routes = RouteMap(
           position: route.queryParameters['position']!,
         )),
     '/hashtags/:name': (route) => CupertinoPage(
-        child: HashtagPreviewPage(
+            child: HashtagPreviewPage(
           name: route.pathParameters['name']!,
         )),
   },
@@ -84,17 +85,76 @@ Future main() async {
   initializeDateFormatting();
   //SharedPreferences? prefs = await SharedPreferences.getInstance();
   //await prefs.setStringList('routes', <String>[]);
-  if (!kIsWeb) {
-    if (Platform.isAndroid) {
-      await FlutterDisplayMode.setHighRefreshRate();
-    }
-  }
+
   setPathUrlStrategy();
-  runApp(const MyApp());
+  await dotenv.load(fileName: "assets/.env");
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class MyApp extends StatefulWidget {
+  MyApp({Key? key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late Brightness _brightness;
+
+
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance?.addPostFrameCallback((_) {
+      fetchAll();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  Future<void> fetchAll() async {
+    if (!kIsWeb) {
+      if (Platform.isAndroid) {
+        await FlutterDisplayMode.setHighRefreshRate();
+        Brightness brightness =
+            SchedulerBinding.instance!.window.platformBrightness;
+        _brightness = brightness;
+        AdaptiveThemeMode? savedThemeMode = await AdaptiveTheme.getThemeMode();
+        if (savedThemeMode != null) {
+          if (savedThemeMode == AdaptiveThemeMode.dark) {
+            brightness = Brightness.dark;
+          }
+          if (savedThemeMode == AdaptiveThemeMode.light) {
+            brightness = Brightness.light;
+          }
+        }
+
+        updateUI(brightness: brightness);
+      }
+    }
+
+    setState(() {});
+  }
+
+  updateUI({required Brightness brightness}) {
+    //Setting SysemUIOverlay
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        //systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarIconBrightness: brightness == Brightness.dark ?  Brightness.light:Brightness.dark,
+        systemNavigationBarColor: Colors.white.withOpacity(0.01),
+        //systemNavigationBarDividerColor: Colors.white.withOpacity(0.1),
+        systemNavigationBarDividerColor: brightness == Brightness.dark ? Colors.transparent : null,
+        //systemNavigationBarIconBrightness: Brightness.light,
+        statusBarIconBrightness: brightness == Brightness.dark ?  Brightness.light:Brightness.dark));
+
+    //Setting SystmeUIMode
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+        overlays: [SystemUiOverlay.top,SystemUiOverlay.bottom]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,17 +167,11 @@ class MyApp extends StatelessWidget {
         BlocProvider<ProfileCubit>(create: (context) => ProfileCubit()),
         BlocProvider<HashtagsCubit>(create: (context) => HashtagsCubit()),
         BlocProvider<BookLibraryCubit>(create: (context) => BookLibraryCubit()),
-
       ],
       child: Portal(
-        child: CupertinoApp.router(
-          title: "MelonCloud",
-          debugShowCheckedModeBanner: false,
-          routeInformationParser: const RoutemasterParser(),
-          routerDelegate: RoutemasterDelegate(
-            routesBuilder: (context) => routes,
-          ),
-          theme: CupertinoThemeData(
+        child: CupertinoAdaptiveTheme(
+          light: CupertinoThemeData(
+            brightness: Brightness.light,
             primaryColor: CupertinoColors.activeBlue,
             textTheme: CupertinoTextThemeData(
               tabLabelTextStyle: GoogleFonts.itim(fontSize: 14),
@@ -125,6 +179,29 @@ class MyApp extends StatelessWidget {
               navTitleTextStyle: GoogleFonts.itim(fontSize: 24),
             ),
           ),
+          dark: CupertinoThemeData(
+            brightness: Brightness.dark,
+            primaryColor: CupertinoColors.activeBlue,
+            textTheme: CupertinoTextThemeData(
+              tabLabelTextStyle: GoogleFonts.itim(fontSize: 14),
+              navLargeTitleTextStyle: GoogleFonts.itim(fontSize: 38),
+              navTitleTextStyle: GoogleFonts.itim(fontSize: 24),
+            ),
+          ),
+          initial: AdaptiveThemeMode.system,
+          builder: (theme) {
+            //print(theme);
+            updateUI(brightness: theme.brightness ?? _brightness);
+            return CupertinoApp.router(
+              title: "MelonCloud",
+              debugShowCheckedModeBanner: false,
+              routeInformationParser: const RoutemasterParser(),
+              routerDelegate: RoutemasterDelegate(
+                routesBuilder: (context) => routes,
+              ),
+              theme: theme,
+            );
+          },
         ),
       ),
     );
