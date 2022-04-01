@@ -180,7 +180,7 @@ class _MelonTimelineState extends State<MelonTimeline> {
         child: AutoSizeText(
           widget.title ?? "",
           maxFontSize: 36,
-          minFontSize: 30,
+          minFontSize: 20,
           maxLines: 1,
           style: GoogleFonts.itim(color: _theme.textColor()),
         ),

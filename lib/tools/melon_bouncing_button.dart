@@ -9,6 +9,7 @@ class MelonBouncingButton extends StatelessWidget {
       this.callback,
       this.active,
       this.isBouncing,
+        this.borderRadius,
       this.fakeLongEnable = true});
 
   Widget? child;
@@ -17,10 +18,12 @@ class MelonBouncingButton extends StatelessWidget {
   bool? active;
   bool? isBouncing;
   bool fakeLongEnable;
+  double? borderRadius;
 
   @override
   Widget build(BuildContext context) {
     return MelonBounceWidget(
+        borderRadius: borderRadius,
         duration: Duration(
             milliseconds: active != null ? (active! ? 96 : 0) : 96),
         fakeLongEnable: fakeLongEnable,
