@@ -6,6 +6,7 @@ class MelonBounceWidget extends StatefulWidget {
   final Duration? duration;
   final double scaleFactor;
   final bool fakeLongEnable;
+  final double? borderRadius;
 
   // This will get the data from the pages
   // Makes sure child won't be passed as null
@@ -13,6 +14,7 @@ class MelonBounceWidget extends StatefulWidget {
       {@required this.child,
       @required this.duration,
       @required this.onPressed,
+      this.borderRadius,
       this.fakeLongEnable = true,
       this.scaleFactor = 1})
       : assert(child != null);
@@ -68,7 +70,7 @@ class MelonBounceWidgetState extends State<MelonBounceWidget>
           scale: _scale,
           child: _animate.value >= 0.02
               ? ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(widget.borderRadius ?? 20),
                   child: widget.child,
                 )
               : widget.child,
@@ -88,8 +90,7 @@ class MelonBounceWidgetState extends State<MelonBounceWidget>
   }
 
   void _onTapUp(TapUpDetails details) {
-    Future.delayed(
-        userDuration ?? const Duration(milliseconds: 10), () {
+    Future.delayed(userDuration ?? const Duration(milliseconds: 10), () {
       _animate.reverse();
 
       if (onPressed != null) onPressed!();

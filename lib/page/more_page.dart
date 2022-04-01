@@ -1,4 +1,5 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:d_chart/d_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,6 +47,14 @@ class _MorePageState extends State<MorePage> {
 
   List<SettingMenu> updateMenu() {
     return [
+      SettingMenuHeader(title: "แอปย่อย"),
+      SettingMenuItem(
+          title: "ตัวสร้างรหัสผ่าน",
+          icon: Ionicons.key_outline,
+          group: true,
+          topOfGroup: true,
+          bottomOfGroup: true,
+          trailing: SettingActionArrow()),
       SettingMenuHeader(title: "ธีม"),
       SettingMenuItem(
           title: "โหมดมืด",
@@ -128,17 +137,7 @@ class _MorePageState extends State<MorePage> {
   }
 
   Widget _loading(state) {
-    if (state is MainMoreLoadingState) {
-      if (state.previousState == null) {
-        return const MelonLoadingWidget();
-      } else {
-        return Container();
-      }
-    } else if (state is! MainMoreLoadingState && state is! MainMoreState) {
-      return const MelonLoadingWidget();
-    } else {
-      return Container();
-    }
+    return Container();
   }
 
   Widget _timeline(state) {
@@ -152,21 +151,78 @@ class _MorePageState extends State<MorePage> {
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.linear);
           },
+          trailingWidget: MelonRefreshButton(
+              isLoading: state is MainMoreLoadingState,
+              callback: () {
+                if (state is MainMoreState) {
+                  context
+                      .read<MainCubit>()
+                      .more(context: context, previousState: state);
+                }
+              }),
           scrollController: _scrollController,
           sliverLayout: _contentState(state),
         ));
   }
 
-  Widget _contentState(state) {
-    List<dynamic> data = [];
-    if (state is MainHashtagState) {
-      data = state.timeline;
+  List<SettingMenu> updatePortfolioMenu(fromState) {
+    MainMoreState? state;
+    List<SettingMenu> results = [];
+
+    if (fromState is MainMoreState) {
+      state = fromState;
     }
-    if (state is MainHashtagLoadingState) {
-      if (state.previousState != null) {
-        data = state.previousState!.timeline;
+    if (fromState is MainMoreLoadingState) {
+      state = fromState.previousState;
+    }
+    if (state != null) {
+      Map<String, dynamic> portfolios = state.portfolios;
+      if (portfolios.isNotEmpty) {}
+
+      dynamic summary = state.summary;
+      Map<String, dynamic> coins = state.coins;
+      if (coins.isNotEmpty && summary.isNotEmpty) {
+        results.add(
+          SettingMenuHeader(title: "พอร์ตการลงทุน"),
+        );
+
+        results.add(SettingSummaryCoinMenuItem(
+            title: "",
+            value: state,
+            icon: null,
+            group: true,
+            topOfGroup: true,
+            bottomOfGroup: coins.isEmpty));
+
+        int coinCount = 0;
+        coins.forEach((k, v) {
+          results.add(SettingCoinMenuItem(
+              title: k,
+              value: v,
+              icon: null,
+              group: true,
+              topOfGroup: false,
+              bottomOfGroup: coinCount == coins.length - 1));
+          coinCount += 1;
+        });
       }
     }
+
+    return results;
+  }
+
+  List<Widget> _portfolioGroupWidget(state) {
+    if (state is MainMoreState) {
+      return [];
+    } else {
+      return [];
+    }
+  }
+
+  Widget _contentState(state) {
+    List<dynamic> data = [];
+    List<SettingMenu> portfolioGroupWidget = updatePortfolioMenu(state);
+
     return SliverPadding(
       padding:
           const EdgeInsets.only(top: 4.0, bottom: 104.0, left: 4.0, right: 4.0),
@@ -178,17 +234,73 @@ class _MorePageState extends State<MorePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(width: 500, child: _settingMenuContent(index))
+                  Container(
+                      width: 500,
+                      child: index < portfolioGroupWidget.length
+                          ? _settingPortfolioGroupMenuContent(state, index)
+                          : _settingMenuContent(
+                              index - portfolioGroupWidget.length))
                 ],
               );
             } else {
-              return _settingMenuContent(index);
+              return index < portfolioGroupWidget.length
+                  ? _settingPortfolioGroupMenuContent(state, index)
+                  : _settingMenuContent(index - portfolioGroupWidget.length);
             }
           },
-          childCount: _menu.length, // 1000 list items
+          childCount:
+              _menu.length + portfolioGroupWidget.length, // 1000 list items
         ),
       ),
     );
+  }
+
+  Widget _settingPortfolioGroupMenuContent(fromState, int index) {
+    MainMoreState? state;
+
+    if (fromState is MainMoreState) {
+      state = fromState;
+    }
+    if (fromState is MainMoreLoadingState) {
+      state = fromState.previousState;
+    }
+
+    if (state != null) {
+      SettingMenu menu = updatePortfolioMenu(state)[index];
+      if (menu is SettingMenuHeader) {
+        return _itemHeader(menu);
+      }
+      if (menu is SettingSummaryCoinMenuItem) {
+        return Column(children: [
+          _itemSummaryCoinContent(menu),
+          menu.bottomOfGroup == false && menu.group == true
+              ? Container(
+                  color: _theme!.onColor().withOpacity(0.05),
+                  margin: const EdgeInsets.only(top: 0, left: 12, right: 12),
+                  child: Container(
+                      margin: const EdgeInsets.only(top: 0, left: 24, right: 0),
+                      color: _theme!.onColor().withOpacity(0.12),
+                      height: 1.2))
+              : const SizedBox()
+        ]);
+      }
+      if (menu is SettingCoinMenuItem) {
+        return Column(children: [
+          _itemCoinContent(menu),
+          menu.bottomOfGroup == false && menu.group == true
+              ? Container(
+                  color: _theme!.onColor().withOpacity(0.05),
+                  margin: const EdgeInsets.only(top: 0, left: 12, right: 12),
+                  child: Container(
+                      margin: const EdgeInsets.only(top: 0, left: 24, right: 0),
+                      color: _theme!.onColor().withOpacity(0.12),
+                      height: 1.2))
+              : const SizedBox()
+        ]);
+      }
+    }
+
+    return Container();
   }
 
   Widget _settingMenuContent(int index) {
@@ -201,8 +313,8 @@ class _MorePageState extends State<MorePage> {
         menu.bottomOfGroup == false && menu.group == true
             ? Container(
                 color: _theme!.onColor().withOpacity(0.05),
-            margin: const EdgeInsets.only(top: 0, left: 12, right: 12),
-            child: Container(
+                margin: const EdgeInsets.only(top: 0, left: 12, right: 12),
+                child: Container(
                     margin: const EdgeInsets.only(top: 0, left: 58, right: 0),
                     color: _theme!.onColor().withOpacity(0.12),
                     height: 1.2))
@@ -225,6 +337,252 @@ class _MorePageState extends State<MorePage> {
         ));
   }
 
+  Widget _itemCoinContent(SettingCoinMenuItem menu) {
+    double mgtop = menu.group ? (menu.topOfGroup ? 4 : 0) : 24;
+    double mgbottom = menu.group ? (menu.bottomOfGroup ? 4 : 0) : 16;
+    double pdRight = menu.trailing != null ? 14 : 20;
+    return OnHover(
+      x: 16,
+      y: 2,
+      disableScale: true,
+      builder: (bool isHovered) {
+        return Container(
+          margin: EdgeInsets.only(top: mgtop, left: 12, right: 12),
+          child: MelonBouncingButton(
+            active: true,
+            isBouncing: false,
+            borderRadius: 0,
+            callback: () {},
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(mgtop > 0 ? 16 : 0),
+                    topRight: Radius.circular(mgtop > 0 ? 16 : 0),
+                    bottomLeft: Radius.circular(mgbottom > 0 ? 16 : 0),
+                    bottomRight: Radius.circular(mgbottom > 0 ? 16 : 0)),
+                color: isHovered
+                    ? _theme?.onColor().withOpacity(0.15)
+                    : _theme?.onColor().withOpacity(0.06),
+              ),
+              padding:
+                  EdgeInsets.only(left: 0, right: pdRight, top: 8, bottom: 0),
+              alignment: Alignment.center,
+              height: 60,
+              child: menu.value != null
+                  ? Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                              height: 60,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const SizedBox(
+                                    width: 24,
+                                  ),
+                                  Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          menu.value['symbol'],
+                                          style: GoogleFonts.itim(
+                                              color: _theme?.textColor(),
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.normal),
+                                        ),
+                                        Text(
+                                          "${menu.value['balance'].toStringAsFixed(10)} ( ${menu.value['percent'].toStringAsFixed(2)}% )",
+                                          style: GoogleFonts.itim(
+                                              color: _theme
+                                                  ?.textColor()
+                                                  .withOpacity(0.5),
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.normal),
+                                        )
+                                      ]),
+                                ],
+                              )),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "${menu.value['balance_baht'].toStringAsFixed(2)}",
+                                style: GoogleFonts.itim(
+                                    color: _theme?.textColor().withOpacity(0.65),
+                                    fontSize: 21,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Text(
+                                "${menu.value['balance_change'].toStringAsFixed(2)}",
+                                style: GoogleFonts.itim(
+                                    color: statusColor(menu.value),
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                            ],
+                          ),
+                        )
+                        //_settingAction(menu)
+                      ],
+                    )
+                  : Container(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _itemSummaryCoinContent(SettingSummaryCoinMenuItem menu) {
+    double mgtop = menu.group ? (menu.topOfGroup ? 4 : 0) : 24;
+    double mgbottom = menu.group ? (menu.bottomOfGroup ? 4 : 0) : 16;
+    double pdRight = menu.trailing != null ? 14 : 20;
+    List<Map<String, dynamic>> pies = [];
+    dynamic summary = menu.value.summary;
+    menu.value.coins.forEach((k, v) {
+      pies.add({'domain': v['symbol'], 'measure': v["percent"]});
+    });
+
+    return OnHover(
+      x: 16,
+      y: 2,
+      disableScale: true,
+      builder: (bool isHovered) {
+        return Container(
+          margin: EdgeInsets.only(top: mgtop, left: 12, right: 12),
+          child: MelonBouncingButton(
+            active: true,
+            isBouncing: false,
+            borderRadius: 0,
+            callback: () {},
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(mgtop > 0 ? 16 : 0),
+                    topRight: Radius.circular(mgtop > 0 ? 16 : 0),
+                    bottomLeft: Radius.circular(mgbottom > 0 ? 16 : 0),
+                    bottomRight: Radius.circular(mgbottom > 0 ? 16 : 0)),
+                color: isHovered
+                    ? _theme?.onColor().withOpacity(0.15)
+                    : _theme?.onColor().withOpacity(0.06),
+              ),
+              padding:
+                  EdgeInsets.only(left: 0, right: pdRight, top: 8, bottom: 0),
+              alignment: Alignment.center,
+              height: 160,
+              child: menu.value != null
+                  ? Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                              width: 260,
+                              height: 160,
+                              child: DChartPie(
+                                animate: false,
+                                data: pies,
+                                labelColor: _theme!.textColor(),
+                                labelLineColor: _theme!.textColor(),
+                                strokeWidth: 2,
+                                labelLinelength: 16,
+                                labelPosition: PieLabelPosition.auto,
+                                fillColor: (pieData, index) => _theme!.textColor().withOpacity(0.7),
+                                donutWidth: 20,
+                                pieLabel: (pieData, index) {
+                                  return pieData['domain'];
+                                },
+                              )),
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "${summary['balance'].toStringAsFixed(2)}",
+                                style: GoogleFonts.itim(
+                                    color: _theme?.textColor().withOpacity(0.7),
+                                    fontSize: 48,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                "ยอดวันนี้:  ${summary['balance_change'].toStringAsFixed(2)}  บาท",
+                                style: GoogleFonts.itim(
+                                    color: statusSummaryColor(summary),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                              const SizedBox(
+                                height: 6,
+                              ),
+                              Text(
+                                "เปอร์เซ็นต์:  ${summary['percent_change'].toStringAsFixed(2)} %",
+                                style: GoogleFonts.itim(
+                                    color: statusSummaryColor(summary),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.normal),
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                            ],
+                          ),
+                        )
+                        //_settingAction(menu)
+                      ],
+                    )
+                  : Container(),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Color statusSummaryColor(value) {
+    if (value['percent_change'] == 0) {
+      return _theme!.textColor().withOpacity(0.5);
+    } else if (value['percent_change'] > 0) {
+      return CupertinoColors.systemGreen.withOpacity(0.8);
+    } else if (value['percent_change'] < 0) {
+      return CupertinoColors.systemPink.withOpacity(0.8);
+    } else {
+      return Colors.transparent;
+    }
+  }
+
+  Color statusColor(value) {
+    if (value['status'] == "Neutral") {
+      return _theme!.textColor().withOpacity(0.5);
+    } else if (value['status'] == "Positive") {
+      return CupertinoColors.systemGreen.withOpacity(0.8);
+    } else if (value['status'] == "Neutral") {
+      return CupertinoColors.systemPink.withOpacity(0.8);
+    } else {
+      return Colors.transparent;
+    }
+  }
+
   Widget _itemContent(SettingMenuItem menu) {
     double mgtop = menu.group ? (menu.topOfGroup ? 4 : 0) : 24;
     double mgbottom = menu.group ? (menu.bottomOfGroup ? 4 : 0) : 16;
@@ -240,6 +598,7 @@ class _MorePageState extends State<MorePage> {
           child: MelonBouncingButton(
             active: true,
             isBouncing: false,
+            borderRadius: 0,
             callback: () {},
             child: Container(
               decoration: BoxDecoration(
@@ -347,6 +706,44 @@ class SettingMenuHeader extends SettingMenu {
   String title;
 
   SettingMenuHeader({required this.title});
+}
+
+class SettingSummaryCoinMenuItem extends SettingMenu {
+  String title;
+  IconData? icon;
+  bool group;
+  bool topOfGroup;
+  bool bottomOfGroup;
+  SettingAction? trailing;
+  dynamic value;
+
+  SettingSummaryCoinMenuItem(
+      {required this.title,
+      this.icon,
+      this.group = false,
+      this.topOfGroup = false,
+      this.bottomOfGroup = false,
+      this.value,
+      this.trailing});
+}
+
+class SettingCoinMenuItem extends SettingMenu {
+  String title;
+  IconData? icon;
+  bool group;
+  bool topOfGroup;
+  bool bottomOfGroup;
+  SettingAction? trailing;
+  dynamic value;
+
+  SettingCoinMenuItem(
+      {required this.title,
+      this.icon,
+      this.group = false,
+      this.topOfGroup = false,
+      this.bottomOfGroup = false,
+      this.value,
+      this.trailing});
 }
 
 class SettingMenuItem extends SettingMenu {

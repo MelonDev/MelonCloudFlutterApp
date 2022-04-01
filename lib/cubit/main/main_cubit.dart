@@ -73,7 +73,6 @@ class MainCubit extends Cubit<MainState> {
       );
       await MelonRouter.push_async(context: context, path: '/home');
       emit(state);
-
     } else {
       emit(MainHomeFailureState(previousState: previousState));
     }
@@ -118,7 +117,6 @@ class MainCubit extends Cubit<MainState> {
       );
       await MelonRouter.push_async(context: context, path: '/events');
       emit(state);
-
     } else {
       emit(MainEventFailureState(previousState: previousState));
     }
@@ -173,7 +171,6 @@ class MainCubit extends Cubit<MainState> {
       );
       await MelonRouter.push_async(context: context, path: '/tags');
       emit(state);
-
     } else if (response.statusCode == 400) {
       if (previousState != null) {
         emit(previousState);
@@ -220,7 +217,6 @@ class MainCubit extends Cubit<MainState> {
       );
       await MelonRouter.push_async(context: context, path: '/books');
       emit(state);
-
     } else if (response.statusCode == 400) {
       if (previousState != null) {
         emit(previousState);
@@ -230,11 +226,34 @@ class MainCubit extends Cubit<MainState> {
     }
   }
 
-  more({required BuildContext context}) async {
-    emit(MainMoreLoadingState(previousState: null));
-    await MelonRouter.push_async(context: context, path: '/more');
-    emit(MainMoreState());
+  more({
+    required BuildContext context,
+    MainMoreState? previousState,
+  }) async {
+    emit(MainMoreLoadingState(previousState: previousState));
 
+    Map<String, String> targets = {};
+    var params = _params(targets: targets);
+
+    Uri uri = Uri.https(_server, '/api/v2/crypto/portfolio', params);
+
+    HttpResponse response = await http_get(uri);
+    if (response.statusCode == 200) {
+      dynamic responseData = response.data['data'];
+      dynamic summary = responseData['summary'];
+      Map<String, dynamic> portfolios = responseData['portfolios'];
+      Map<String, dynamic> coins = responseData['coins'];
+
+      await MelonRouter.push_async(context: context, path: '/more');
+      emit(MainMoreState(
+          summary: summary, portfolios: portfolios, coins: coins));
+    } else if (response.statusCode == 400) {
+      if (previousState != null) {
+        emit(previousState);
+      }
+    } else {
+      emit(MainMoreFailureState(previousState: previousState));
+    }
   }
 
   Map<String, String> _params({Map<String, String>? targets}) {
