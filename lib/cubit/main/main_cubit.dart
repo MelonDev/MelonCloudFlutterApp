@@ -240,6 +240,7 @@ class MainCubit extends Cubit<MainState> {
     HttpResponse response = await http_get(uri);
     if (response.statusCode == 200) {
       dynamic responseData = response.data['data'];
+      print(responseData);
       dynamic summary = responseData['summary'];
       Map<String, dynamic> portfolios = responseData['portfolios'];
       Map<String, dynamic> coins = responseData['coins'];

@@ -455,6 +455,17 @@ class _MorePageState extends State<MorePage> {
     menu.value.coins.forEach((k, v) {
       pies.add({'domain': v['symbol'], 'measure': v["percent"]});
     });
+    double size_width = MediaQuery.of(context).size.width;
+    double width = 0;
+    if (size_width < 500){
+      width = 160;
+    }else{
+      width = 260;
+
+    }
+
+    final List<Color> colors = <Color>[_theme!.textColor().withOpacity(0.7), _theme!.textColor().withOpacity(0.5), _theme!.textColor().withOpacity(0.3),_theme!.textColor().withOpacity(0.1)];
+
 
     return OnHover(
       x: 16,
@@ -489,7 +500,7 @@ class _MorePageState extends State<MorePage> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Container(
-                              width: 260,
+                              width: width,
                               height: 160,
                               child: DChartPie(
                                 animate: false,
@@ -499,10 +510,10 @@ class _MorePageState extends State<MorePage> {
                                 strokeWidth: 2,
                                 labelLinelength: 16,
                                 labelPosition: PieLabelPosition.auto,
-                                fillColor: (pieData, index) => _theme!.textColor().withOpacity(0.7),
+                                fillColor: (pieData, index) => colors[index!],
                                 donutWidth: 20,
                                 pieLabel: (pieData, index) {
-                                  return pieData['domain'];
+                                  return size_width >= 500 ? pieData['domain'] : "";
                                 },
                               )),
                         ),
@@ -576,7 +587,7 @@ class _MorePageState extends State<MorePage> {
       return _theme!.textColor().withOpacity(0.5);
     } else if (value['status'] == "Positive") {
       return CupertinoColors.systemGreen.withOpacity(0.8);
-    } else if (value['status'] == "Neutral") {
+    } else if (value['status'] == "Negative") {
       return CupertinoColors.systemPink.withOpacity(0.8);
     } else {
       return Colors.transparent;
