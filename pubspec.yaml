@@ -60,6 +60,8 @@ flutter_icons:
   android: true
   ios: true
   image_path: "assets/command_full_logo.png"
+  adaptive_icon_background: "assets/command_bg_logo.png"
+  adaptive_icon_foreground: "assets/command_fg2_logo.png"
 
 flutter:
   uses-material-design: true
