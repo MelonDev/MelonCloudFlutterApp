@@ -51,15 +51,15 @@ dev_dependencies:
 
 
 flutter_native_splash:
-  color: "#F7FEFF"
-  image: "assets/preview_logo_2.png"
-  color_dark: "#022226"
-  image_dark: "assets/preview_logo_2.png"
+  color: "#E5E7FF"
+  image: "assets/command_logo.png"
+  color_dark: "#151623"
+  image_dark: "assets/command_logo.png"
 
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/preview_logo_4.png"
+  image_path: "assets/command_full_logo.png"
 
 flutter:
   uses-material-design: true

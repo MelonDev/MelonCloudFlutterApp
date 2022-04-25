@@ -29,7 +29,7 @@ class HashtagsPage extends StatefulWidget {
 class _HashtagsPageState extends State<HashtagsPage> {
   ScrollController? _scrollController;
   MelonThemeData? _theme;
-  int segmentedControlGroupValue = 0;
+  int segmentedControlGroupValue = 1;
   Map<int, Widget> myTabs = {};
 
   @override
@@ -174,7 +174,7 @@ class _HashtagsPageState extends State<HashtagsPage> {
           onValueChanged: (int? i) {
             if (state is MainHashtagState) {
               setState(() {
-                segmentedControlGroupValue = i ?? 0;
+                segmentedControlGroupValue = i ?? 1;
               });
               context
                   .read<MainCubit>()
