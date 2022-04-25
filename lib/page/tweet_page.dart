@@ -42,14 +42,21 @@ class _TweetPageState extends State<TweetPage> {
   Widget build(BuildContext context) {
     _theme = MelonTheme.of(context);
 
-    print(MediaQuery.of(context).size.width);
-
-    if (MediaQuery.of(context).size.width >= 900) {
+    if (MediaQuery
+        .of(context)
+        .size
+        .width >= 900) {
       _width = 390.0;
-    } else if (MediaQuery.of(context).size.width >= 600) {
+    } else if (MediaQuery
+        .of(context)
+        .size
+        .width >= 600) {
       _width = 600.0;
     } else {
-      _width = MediaQuery.of(context).size.width;
+      _width = MediaQuery
+          .of(context)
+          .size
+          .width;
     }
 
     return BlocBuilder<TweetCubit, TweetBaseState>(builder: (context, state) {
@@ -69,7 +76,7 @@ class _TweetPageState extends State<TweetPage> {
               navigationBar: CupertinoNavigationBar(
                 //brightness: disable ? Brightness.dark :null,
                 border:
-                    const Border(bottom: BorderSide(color: Colors.transparent)),
+                const Border(bottom: BorderSide(color: Colors.transparent)),
                 backgroundColor: _theme.barColor(),
                 trailing: _trailing(state),
                 leading: MelonBackButton(),
@@ -101,14 +108,14 @@ class _TweetPageState extends State<TweetPage> {
         disable
             ? Container()
             : const SizedBox(
-                width: 10,
-              ),
+          width: 10,
+        ),
         disable
             ? Container()
             : IgnorePointer(
-                ignoring: (state is LoadingTweetState),
-                child: _melonMenu(state),
-              )
+          ignoring: (state is LoadingTweetState),
+          child: _melonMenu(state),
+        )
       ],
     );
   }
@@ -124,47 +131,49 @@ class _TweetPageState extends State<TweetPage> {
 
     return Container(
         child: MelonPopupMenuButton(
-      actions: disable
-          ? []
-          : [
-        MelonPopupMenuButtonAction(
-            trailingIcon: Ionicons.rocket_outline,
-            title: "เปิดในแอป",
-            onPressed: () {
-              context.read<TweetCubit>().openTweet(state.data['id']);
-
-            }),
-              MelonPopupMenuButtonAction(
-                trailingIcon: Ionicons.person_outline,
-                title: "เปิดโปรไฟล์",
+          actions: disable
+              ? []
+              : [
+            MelonPopupMenuButtonAction(
+                trailingIcon: Ionicons.rocket_outline,
+                title: "เปิดในแอป",
                 onPressed: () {
-                  context.read<TweetCubit>().openTwitterProfile(state.data['account']['id']);
-                },
-              ),
-
-              MelonPopupMenuButtonAction(
-                  trailingIcon: Ionicons.search_outline,
-                  title: "ค้นหาในทวิตเตอร์",
-                  onPressed: () {
-                    context.read<TweetCubit>().openSearchTwitterProfile(state.data['account']['screen_name']);
-                  }),
-              MelonPopupMenuButtonAction(
+                  context.read<TweetCubit>().openTweet(state.data['id']);
+                }),
+            MelonPopupMenuButtonAction(
+              trailingIcon: Ionicons.person_outline,
+              title: "เปิดโปรไฟล์",
+              onPressed: () {
+                context
+                    .read<TweetCubit>()
+                    .openTwitterProfile(state.data['account']['id']);
+              },
+            ),
+            MelonPopupMenuButtonAction(
+                trailingIcon: Ionicons.search_outline,
+                title: "ค้นหาในทวิตเตอร์",
+                onPressed: () {
+                  context.read<TweetCubit>().openSearchTwitterProfile(
+                      state.data['account']['screen_name']);
+                }),
+            MelonPopupMenuButtonAction(
                 trailingIcon: Ionicons.timer_outline,
                 title: "ทวีตย้อนหลัง",
-                  onPressed: () {
-                    MelonRouter.push(context: context, path: "/profile/${state.data['account']['id']}");
-                  }
-              ),
-              memories ? MelonPopupMenuSpacingAction() : null,
-              memories
-                  ? MelonPopupMenuButtonAction(
-                      trailingIcon: Ionicons.heart_dislike_outline,
-                      isDestructiveAction: true,
-                      title: "เลิกชื่นชอบ",
-                    )
-                  : null,
-            ],
-    ));
+                onPressed: () {
+                  MelonRouter.push(
+                      context: context,
+                      path: "/profile/${state.data['account']['id']}");
+                }),
+            memories ? MelonPopupMenuSpacingAction() : null,
+            memories
+                ? MelonPopupMenuButtonAction(
+              trailingIcon: Ionicons.heart_dislike_outline,
+              isDestructiveAction: true,
+              title: "เลิกชื่นชอบ",
+            )
+                : null,
+          ],
+        ));
     //return Container();
   }
 
@@ -178,36 +187,36 @@ class _TweetPageState extends State<TweetPage> {
         return disable
             ? _error()
             : Container(
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        width: 150,
-                        height: 150,
-                        child: Column(
-                          children: [
-                            Icon(
-                              CupertinoIcons.cloud,
-                              size: 100,
-                              color: _theme.textColor().withOpacity(0.9),
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              "กำลังโหลด..",
-                              style: GoogleFonts.itim(
-                                  fontSize: 24,
-                                  color: _theme.textColor().withOpacity(0.9)),
-                            )
-                          ],
-                        ),
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: 150,
+                  height: 150,
+                  child: Column(
+                    children: [
+                      Icon(
+                        CupertinoIcons.cloud,
+                        size: 100,
+                        color: _theme.textColor().withOpacity(0.9),
                       ),
-                    )
-                  ],
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "กำลังโหลด..",
+                        style: GoogleFonts.itim(
+                            fontSize: 24,
+                            color: _theme.textColor().withOpacity(0.9)),
+                      )
+                    ],
+                  ),
                 ),
-              );
+              )
+            ],
+          ),
+        );
       }
     } else {
       return Container();
@@ -216,8 +225,14 @@ class _TweetPageState extends State<TweetPage> {
 
   Widget _dataArea(TweetState state) {
     Size appbarSize = const CupertinoNavigationBar().preferredSize;
-    double statusBarHeight = MediaQuery.of(context).padding.top;
-    double navigationBarHeight = MediaQuery.of(context).padding.bottom;
+    double statusBarHeight = MediaQuery
+        .of(context)
+        .padding
+        .top;
+    double navigationBarHeight = MediaQuery
+        .of(context)
+        .padding
+        .bottom;
 
     if (state.data != null) {
       return SafeArea(
@@ -227,7 +242,10 @@ class _TweetPageState extends State<TweetPage> {
           top: false,
           child: SingleChildScrollView(
             child: Container(
-                width: MediaQuery.of(context).size.width,
+                width: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
                 padding: EdgeInsets.only(
                   top: 16.0 + statusBarHeight + appbarSize.height,
                   bottom: (navigationBarHeight).toDouble(),
@@ -253,7 +271,7 @@ class _TweetPageState extends State<TweetPage> {
               width: 200,
               height: 200,
               decoration: BoxDecoration(
-                  //color: CupertinoColors.systemRed,
+                //color: CupertinoColors.systemRed,
                   borderRadius: BorderRadius.circular(50)),
               margin: const EdgeInsets.only(bottom: 0),
               padding: const EdgeInsets.all(20),
@@ -284,7 +302,10 @@ class _TweetPageState extends State<TweetPage> {
   }
 
   Widget _layout(TweetState state) {
-    if (MediaQuery.of(context).size.width > 900) {
+    if (MediaQuery
+        .of(context)
+        .size
+        .width > 900) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,40 +360,43 @@ class _TweetPageState extends State<TweetPage> {
           ),
         ],
       );
-    } else if (MediaQuery.of(context).size.width > 600) {
+    } else if (MediaQuery
+        .of(context)
+        .size
+        .width > 600) {
       return Container(
           child: Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _profileWidget(state),
-                SizedBox(
-                  height: (10).toDouble(),
-                ),
-                _currentStatusWidget(state, 600),
-                _titleWidget("รูปภาพ"),
-                _photoWidget(state),
-                SizedBox(
-                  height: (26).toDouble(),
-                ),
-                _tagGroupWidget(state),
-                _isEnableMessage(state)
-                    ? _titleWidget("ข้อความ", marginTop: 0)
-                    : Container(),
-
-
-                _isEnableMessage(state) ? _langGroupWidget(state) : Container(),
-                SizedBox(
-                  height: (40).toDouble(),
-                ),
-              ],
-            )
-          ]));
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _profileWidget(state),
+                    SizedBox(
+                      height: (10).toDouble(),
+                    ),
+                    _currentStatusWidget(state, 600),
+                    _titleWidget("รูปภาพ"),
+                    _photoWidget(state),
+                    SizedBox(
+                      height: (26).toDouble(),
+                    ),
+                    _tagGroupWidget(state),
+                    _isEnableMessage(state)
+                        ? _titleWidget("ข้อความ", marginTop: 0)
+                        : Container(),
+                    _isEnableMessage(state)
+                        ? _langGroupWidget(state)
+                        : Container(),
+                    SizedBox(
+                      height: (40).toDouble(),
+                    ),
+                  ],
+                )
+              ]));
     } else {
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -382,7 +406,10 @@ class _TweetPageState extends State<TweetPage> {
           SizedBox(
             height: (10).toDouble(),
           ),
-          _currentStatusWidget(state, MediaQuery.of(context).size.width),
+          _currentStatusWidget(state, MediaQuery
+              .of(context)
+              .size
+              .width),
           _titleWidget("รูปภาพ"),
           _photoWidget(state),
           SizedBox(
@@ -403,7 +430,8 @@ class _TweetPageState extends State<TweetPage> {
 
   bool _isEnableMessage(TweetState state) {
     if (state.data['message'] != null) {
-      return _removeTrashInText(state.data['message'].toString()).length > 0;
+      //return _removeTrashInText(state.data['message'].toString()).isNotEmpty;
+      return state.data['message'].length > 0;
     } else {
       return false;
     }
@@ -419,137 +447,158 @@ class _TweetPageState extends State<TweetPage> {
 
     return len > 0
         ? Container(
-            padding: const EdgeInsets.only(bottom: 10),
-            margin: const EdgeInsets.only(top: 20),
-            width: MediaQuery.of(context).size.width >= 900
-                ? MediaQuery.of(context).size.width - _width - 40
-                : (MediaQuery.of(context).size.width >= 600 ? 600 : _width),
-            height: MediaQuery.of(context).size.width > 900
-                ? _width * 1.1
-                : _width * 0.6,
-            child: ScrollConfiguration(
-                behavior:
-                    ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                child: ListView.builder(
-                  padding:
-                      const EdgeInsets.only(left: 16, right: 16, bottom: 0),
-                  shrinkWrap: true,
-                  physics: const BouncingScrollPhysics(),
-                  itemBuilder: (sContext, sPosition) {
-                    return OnHover(
-                      x: 5,
-                      y: 10,
-                      builder: (bool isHovered) {
-                        return MelonBouncingButton(
-                          callback: () {
-                            if (photos != null) {
-                              List<String> items = [];
-                              for (String photo in photos) {
-                                String item = "$photo:orig";
-                                items.add(item);
-
-                              }
-                              String photosString = items.join('@');
-                              String positionString = sPosition.toString();
-                              Map<String, String> queryParameters = {
-                                "photos": photosString,
-                                "position": positionString
-                              };
-                              MelonRouter.push(
-                                  context: context,
-                                  path: "/preview",
-                                  queryParameters: queryParameters);
-                            }
-                          },
-                          child: Hero(
-                              tag: items[sPosition],
-                              child: Container(
-                                margin: EdgeInsets.only(right: 8),
-                                width: MediaQuery.of(context).size.width > 900
-                                    ? _width * 0.7
-                                    : _width * 0.45,
-                                height: MediaQuery.of(context).size.width > 900
-                                    ? _width * 1.1
-                                    : _width * 0.6,
-                                child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(16.0),
-                                    child: Stack(
-                                      fit: StackFit.expand,
-                                      children: [
-                                        FadeInImage.assetNetwork(
-                                          placeholder: _theme.isDark()
-                                              ? 'assets/white_loading.gif'
-                                              : 'assets/black_loading.gif',
-                                          fadeInDuration:
-                                              const Duration(milliseconds: 200),
-                                          image:
-                                              "${items[sPosition]}${photos != null ? ':small' : ''}",
-                                          imageErrorBuilder:
-                                              (BuildContext context,
-                                                  Object exception,
-                                                  StackTrace? stackTrace) {
-                                            return Container(
-                                              color: _theme
-                                                  .onColor()
-                                                  .withOpacity(0.2),
-                                              width: MediaQuery.of(context)
-                                                  .size
-                                                  .width,
-                                              height: MediaQuery.of(context)
-                                                  .size
-                                                  .height,
-                                              child: Column(
-                                                mainAxisSize: MainAxisSize.max,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    CupertinoIcons
-                                                        .xmark_seal_fill,
-                                                    color: _theme.textColor(),
-                                                    size: 50,
-                                                  ),
-                                                  const SizedBox(
-                                                    height: 10,
-                                                  ),
-                                                  Text(
-                                                    "ไม่พบข้อมูล",
-                                                    style: GoogleFonts.itim(
-                                                        color:
-                                                            _theme.textColor()),
-                                                  )
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                          fit: BoxFit.cover,
+      padding: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.only(top: 20),
+      width: MediaQuery
+          .of(context)
+          .size
+          .width >= 900
+          ? MediaQuery
+          .of(context)
+          .size
+          .width - _width - 40
+          : (MediaQuery
+          .of(context)
+          .size
+          .width >= 600 ? 600 : _width),
+      height: MediaQuery
+          .of(context)
+          .size
+          .width > 900
+          ? _width * 1.1
+          : _width * 0.6,
+      child: ScrollConfiguration(
+          behavior:
+          ScrollConfiguration.of(context).copyWith(scrollbars: false),
+          child: ListView.builder(
+            padding:
+            const EdgeInsets.only(left: 16, right: 16, bottom: 0),
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
+            itemBuilder: (sContext, sPosition) {
+              return OnHover(
+                x: 5,
+                y: 10,
+                builder: (bool isHovered) {
+                  return MelonBouncingButton(
+                    callback: () {
+                      if (photos != null) {
+                        List<String> items = [];
+                        for (String photo in photos) {
+                          String item = "$photo:orig";
+                          items.add(item);
+                        }
+                        String photosString = items.join('@');
+                        String positionString = sPosition.toString();
+                        Map<String, String> queryParameters = {
+                          "photos": photosString,
+                          "position": positionString
+                        };
+                        MelonRouter.push(
+                            context: context,
+                            path: "/preview",
+                            queryParameters: queryParameters);
+                      }
+                    },
+                    child: Hero(
+                        tag: items[sPosition],
+                        child: Container(
+                          margin: EdgeInsets.only(right: 8),
+                          width: MediaQuery
+                              .of(context)
+                              .size
+                              .width > 900
+                              ? _width * 0.7
+                              : _width * 0.45,
+                          height: MediaQuery
+                              .of(context)
+                              .size
+                              .width > 900
+                              ? _width * 1.1
+                              : _width * 0.6,
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16.0),
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  FadeInImage.assetNetwork(
+                                    placeholder: _theme.isDark()
+                                        ? 'assets/white_loading.gif'
+                                        : 'assets/black_loading.gif',
+                                    fadeInDuration:
+                                    const Duration(milliseconds: 200),
+                                    image:
+                                    "${items[sPosition]}${photos != null
+                                        ? ':small'
+                                        : ''}",
+                                    imageErrorBuilder:
+                                        (BuildContext context,
+                                        Object exception,
+                                        StackTrace? stackTrace) {
+                                      return Container(
+                                        color: _theme
+                                            .onColor()
+                                            .withOpacity(0.2),
+                                        width: MediaQuery
+                                            .of(context)
+                                            .size
+                                            .width,
+                                        height: MediaQuery
+                                            .of(context)
+                                            .size
+                                            .height,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              CupertinoIcons
+                                                  .xmark_seal_fill,
+                                              color: _theme.textColor(),
+                                              size: 50,
+                                            ),
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              "ไม่พบข้อมูล",
+                                              style: GoogleFonts.itim(
+                                                  color:
+                                                  _theme.textColor()),
+                                            )
+                                          ],
                                         ),
-                                        videos != null
-                                            ? Align(
-                                                alignment: Alignment.bottomLeft,
-                                                child: Container(
-                                                  margin: const EdgeInsets.only(
-                                                      left: 8, bottom: 8),
-                                                  child: const Icon(
-                                                    CupertinoIcons
-                                                        .videocam_circle_fill,
-                                                    color: Colors.white,
-                                                    size: 48,
-                                                  ),
-                                                ),
-                                              )
-                                            : Container()
-                                      ],
-                                    )),
+                                      );
+                                    },
+                                    fit: BoxFit.cover,
+                                  ),
+                                  videos != null
+                                      ? Align(
+                                    alignment: Alignment.bottomLeft,
+                                    child: Container(
+                                      margin: const EdgeInsets.only(
+                                          left: 8, bottom: 8),
+                                      child: const Icon(
+                                        CupertinoIcons
+                                            .videocam_circle_fill,
+                                        color: Colors.white,
+                                        size: 48,
+                                      ),
+                                    ),
+                                  )
+                                      : Container()
+                                ],
                               )),
-                        );
-                      },
-                    );
-                  },
-                  itemCount: len,
-                  scrollDirection: Axis.horizontal,
-                )),
-          )
+                        )),
+                  );
+                },
+              );
+            },
+            itemCount: len,
+            scrollDirection: Axis.horizontal,
+          )),
+    )
         : Container();
   }
 
@@ -561,10 +610,9 @@ class _TweetPageState extends State<TweetPage> {
           ? state.data['message'].toString()
           : state.data["translate"]["${state.data['language']}"].toString();
 
-      String _zuText = state.data["translate"]["zu"].toString();
-
       //print(state.data['tweet']['lang']);
       //print(state.data["translate"]);
+
 
       if (_originalText != "null") {
         _listWidget.add(_langWidget(_originalText, state.data['language']));
@@ -573,10 +621,14 @@ class _TweetPageState extends State<TweetPage> {
             .add(_langWidget(state.data['message'], state.data['language']));
       }
 
-      if (_zuText != null) {
+      if (state.data['language'] != "en" &&
+          state.data["translate"]["en"] != null) {
         String _englishText = state.data["translate"]["en"].toString();
-        String _thaiText = state.data["translate"]["th"].toString();
         _listWidget.add(_langWidget(_englishText, "en"));
+      }
+      if (state.data['language'] != "th" &&
+          state.data["translate"]["th"] != null) {
+        String _thaiText = state.data["translate"]["th"].toString();
         _listWidget.add(_langWidget(_thaiText, "th"));
       }
     } else {
@@ -584,7 +636,10 @@ class _TweetPageState extends State<TweetPage> {
       _listWidget
           .add(_langWidget(state.data['message'], state.data['language']));
     }
-    double w = MediaQuery.of(context).size.width;
+    double w = MediaQuery
+        .of(context)
+        .size
+        .width;
     return Container(
       margin: w < 600 || w >= 900
           ? const EdgeInsets.only(left: 16, right: 16, top: 10)
@@ -614,8 +669,10 @@ class _TweetPageState extends State<TweetPage> {
               ),
               child: MelonBouncingButton(
                 callback: () {
-                  MelonRouter.push(context: context, path: "/profile/${state.data['account']['id']}");
-                 },
+                  MelonRouter.push(
+                      context: context,
+                      path: "/profile/${state.data['account']['id']}");
+                },
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
@@ -647,7 +704,10 @@ class _TweetPageState extends State<TweetPage> {
                                 fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            "@${state.data['account']['screen_name']}${state.data['account']['location'].length != 0 ? '\n' : ''}${state.data['account']['location']}",
+                            "@${state.data['account']['screen_name']}${state
+                                .data['account']['location'].length != 0
+                                ? '\n'
+                                : ''}${state.data['account']['location']}",
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.itim(
                                 fontSize: 16,
@@ -668,7 +728,10 @@ class _TweetPageState extends State<TweetPage> {
   Widget _currentStatusWidget(TweetState state, double width) {
     bool memories = state.data['memories'] ?? false;
 
-    double w = MediaQuery.of(context).size.width;
+    double w = MediaQuery
+        .of(context)
+        .size
+        .width;
 
     return Container(
       height: 70,
@@ -728,23 +791,23 @@ class _TweetPageState extends State<TweetPage> {
           _wallWidget(),
           !memories
               ? OnHover(
-                  x: 5,
-                  y: 3,
-                  builder: (bool isHovered) {
-                    return _statusWidget(
-                      null,
-                      "บันทึก",
-                      memories,
-                      overrideIcon: CupertinoIcons.tray_arrow_down,
-                      isHovered: isHovered,
-                      callback: () {
-                        //context
-                        //    .read<TweetCubit>()
-                        //    .secretLikeTweet(state, state.data['tweet']['id']);
-                      },
-                    );
-                  },
-                )
+            x: 5,
+            y: 3,
+            builder: (bool isHovered) {
+              return _statusWidget(
+                null,
+                "บันทึก",
+                memories,
+                overrideIcon: CupertinoIcons.tray_arrow_down,
+                isHovered: isHovered,
+                callback: () {
+                  //context
+                  //    .read<TweetCubit>()
+                  //    .secretLikeTweet(state, state.data['tweet']['id']);
+                },
+              );
+            },
+          )
               : Container(),
           !memories ? _wallWidget() : Container(),
 
@@ -761,7 +824,6 @@ class _TweetPageState extends State<TweetPage> {
                 isHovered: isHovered,
                 callback: () {
                   context.read<TweetCubit>().openTweet(state.data['id']);
-
                 },
               );
             },
@@ -779,28 +841,28 @@ class _TweetPageState extends State<TweetPage> {
     );
   }
 
-  Widget _statusWidget(
-      String? labelTop, String labelBottom, bool forceMarginRight,
+  Widget _statusWidget(String? labelTop, String labelBottom,
+      bool forceMarginRight,
       {double? overrideFontSize,
-      IconData? overrideIcon,
-      VoidCallback? callback,
-      Color? colorWhenEnable,
-      bool isHovered = false,
-      bool isEnable = false}) {
+        IconData? overrideIcon,
+        VoidCallback? callback,
+        Color? colorWhenEnable,
+        bool isHovered = false,
+        bool isEnable = false}) {
     return MelonBouncingButton(
       callback: callback,
       isBouncing: callback != null,
       child: Container(
         width: _statusWidgetWidth(forceMarginRight,
-                enableFour: !forceMarginRight) -
+            enableFour: !forceMarginRight) -
             3,
         height: 76,
         decoration: BoxDecoration(
             color: isEnable
                 ? colorWhenEnable
                 : (isHovered
-                    ? _theme.textColor().withOpacity(0.1)
-                    : _theme.backgroundColor()),
+                ? _theme.textColor().withOpacity(0.1)
+                : _theme.backgroundColor()),
             borderRadius: BorderRadius.circular(10)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -809,30 +871,30 @@ class _TweetPageState extends State<TweetPage> {
           children: [
             overrideIcon != null
                 ? Icon(
-                    overrideIcon,
-                    size: 28,
-                    color: _theme.textColor(),
-                  )
+              overrideIcon,
+              size: 28,
+              color: _theme.textColor(),
+            )
                 : Text(
-                    labelTop ?? "",
-                    style: GoogleFonts.itim(
-                        fontSize: overrideFontSize ?? 32,
-                        color: isEnable ? Colors.white : _theme.textColor(),
-                        fontWeight: FontWeight.bold),
-                  ),
+              labelTop ?? "",
+              style: GoogleFonts.itim(
+                  fontSize: overrideFontSize ?? 32,
+                  color: isEnable ? Colors.white : _theme.textColor(),
+                  fontWeight: FontWeight.bold),
+            ),
             Container(
               margin: EdgeInsets.only(bottom: overrideIcon != null ? 11 : 2),
             ),
             labelBottom != null
                 ? Text(
-                    labelBottom,
-                    style: GoogleFonts.itim(
-                        fontSize: 16,
-                        color: isEnable
-                            ? Colors.white.withOpacity(0.8)
-                            : _theme.textColor().withOpacity(0.8),
-                        fontWeight: FontWeight.bold),
-                  )
+              labelBottom,
+              style: GoogleFonts.itim(
+                  fontSize: 16,
+                  color: isEnable
+                      ? Colors.white.withOpacity(0.8)
+                      : _theme.textColor().withOpacity(0.8),
+                  fontWeight: FontWeight.bold),
+            )
                 : Container()
           ],
         ),
@@ -843,7 +905,10 @@ class _TweetPageState extends State<TweetPage> {
   double _statusWidgetWidth(bool forceMarginRight, {bool enableFour = false}) {
     double width = _width;
 
-    if (MediaQuery.of(context).size.width < 600) {
+    if (MediaQuery
+        .of(context)
+        .size
+        .width < 600) {
       width -= (20 + (forceMarginRight ? 6 : 20));
     }
 
@@ -890,6 +955,7 @@ class _TweetPageState extends State<TweetPage> {
   }
 
   String _removeTrashInText(String text) {
+    text = text.replaceAll("　"," ");
     text = text.replaceAll(
         RegExp(
             r"(http|ftp|https)://([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?"),
@@ -898,7 +964,10 @@ class _TweetPageState extends State<TweetPage> {
         RegExp(
             r"(http|ftp|https): ([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:/~+#-]*[\w@?^=%&/~+#-])?"),
         "");
-    return text.replaceFirst(RegExp(r"\#[^]*"), "");
+    text = text.replaceAll(
+        RegExp(r"(#(?:[^\x00-\x7F]|\w)+) "), ""
+    );
+    return text;
   }
 
   Widget _chipTagWidget(String title, Color color, IconData iconData) {
@@ -916,7 +985,7 @@ class _TweetPageState extends State<TweetPage> {
                 borderRadius: const BorderRadius.all(Radius.circular(40))),
             margin: const EdgeInsets.only(left: 0, bottom: 0, right: 6),
             padding:
-                const EdgeInsets.only(left: 18, bottom: 6, right: 18, top: 6),
+            const EdgeInsets.only(left: 18, bottom: 6, right: 18, top: 6),
             child: Row(
               children: [
                 Icon(
@@ -979,15 +1048,15 @@ class _TweetPageState extends State<TweetPage> {
       }
     }
     return Container(
-      width:_width,
-      child:ScrollConfiguration(
-          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
-            child: Row(children: widgets),
-          ))
-    );
+        width: _width,
+        child: ScrollConfiguration(
+            behavior:
+            ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
+              child: Row(children: widgets),
+            )));
   }
 
   String _getLangName(String name) {
