@@ -37,6 +37,12 @@ import 'package:url_strategy/url_strategy.dart';
 import 'cubit/book_library/book_library_cubit.dart';
 import 'cubit/route/route_cubit.dart';
 
+
+CupertinoPage melonCupertinoPage({Widget? child}){
+  return CupertinoPage(child: Container(color:Colors.white,child:child));
+}
+
+
 final routes = RouteMap(
   onUnknownRoute: (route) => const Redirect('/'),
   routes: {
@@ -45,39 +51,40 @@ final routes = RouteMap(
           paths: MelonRouter.tabsRoute,
         ),
     '/home': (route) {
-      return CupertinoPage(child: GalleryPage());
+      return melonCupertinoPage(child: GalleryPage());
     },
     '/events': (route) {
-      return const CupertinoPage(child: EventPage());
+      return melonCupertinoPage(child: const EventPage());
     },
-    '/tags': (route) => const CupertinoPage(child: HashtagsPage()),
-    '/books': (route) => const CupertinoPage(child: BooksLibraryPage()),
-    '/more': (route) => const CupertinoPage(child: MorePage()),
-    '/error': (route) => CupertinoPage(child: ErrorPage(callback: () {})),
-    '/book/:id': (route) => CupertinoPage(
+    '/tags': (route) => melonCupertinoPage(child: const HashtagsPage()),
+    '/books': (route) => melonCupertinoPage(child: const BooksLibraryPage()),
+    '/more': (route) => melonCupertinoPage(child: const MorePage()),
+    '/error': (route) => melonCupertinoPage(child: ErrorPage(callback: () {})),
+    '/book/:id': (route) => melonCupertinoPage(
             child: BookPage(
           bookid: route.pathParameters['id']!,
         )),
-    '/tweets/:id': (route) => CupertinoPage(
+    '/tweets/:id': (route) => melonCupertinoPage(
             child: TweetPage(
           tweetid: route.pathParameters['id']!,
         )),
-    '/peoples': (route) => const CupertinoPage(child: PeoplesPage()),
-    '/profile/:id': (route) => CupertinoPage(
+    '/peoples': (route) => melonCupertinoPage(child: const PeoplesPage()),
+    '/profile/:id': (route) => melonCupertinoPage(
             child: ProfilePage(
           account: route.pathParameters['id']!,
         )),
-    '/preview': (route) => CupertinoPage(
+    '/preview': (route) => melonCupertinoPage(
             child: ImagePreviewPage(
           photos: route.queryParameters['photos']!,
           position: route.queryParameters['position']!,
         )),
-    '/hashtags/:name': (route) => CupertinoPage(
+    '/hashtags/:name': (route) => melonCupertinoPage(
             child: HashtagPreviewPage(
           name: route.pathParameters['name']!,
         )),
   },
 );
+
 
 Future main() async {
   Intl.defaultLocale = "th";
@@ -90,7 +97,7 @@ Future main() async {
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -98,7 +105,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Brightness _brightness;
-
 
   @override
   void initState() {
@@ -142,16 +148,20 @@ class _MyAppState extends State<MyApp> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         //systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness: brightness == Brightness.dark ?  Brightness.light:Brightness.dark,
+        systemNavigationBarIconBrightness:
+            brightness == Brightness.dark ? Brightness.light : Brightness.dark,
         systemNavigationBarColor: Colors.white.withOpacity(0.01),
         //systemNavigationBarDividerColor: Colors.white.withOpacity(0.1),
-        systemNavigationBarDividerColor: brightness == Brightness.dark ? Colors.transparent : null,
+        systemNavigationBarDividerColor:
+            brightness == Brightness.dark ? Colors.transparent : null,
         //systemNavigationBarIconBrightness: Brightness.light,
-        statusBarIconBrightness: brightness == Brightness.dark ?  Brightness.light:Brightness.dark));
+        statusBarIconBrightness: brightness == Brightness.dark
+            ? Brightness.light
+            : Brightness.dark));
 
     //Setting SystmeUIMode
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
-        overlays: [SystemUiOverlay.top,SystemUiOverlay.bottom]);
+        overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
   }
 
   @override
