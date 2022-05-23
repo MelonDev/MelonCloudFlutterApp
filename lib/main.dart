@@ -103,7 +103,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance?.addPostFrameCallback((_) {
+    SchedulerBinding.instance.addPostFrameCallback((_) {
       fetchAll();
     });
   }
