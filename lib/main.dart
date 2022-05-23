@@ -42,7 +42,6 @@ CupertinoPage melonCupertinoPage({Widget? child}){
   return CupertinoPage(child: Container(color:Colors.white,child:child));
 }
 
-
 final routes = RouteMap(
   onUnknownRoute: (route) => const Redirect('/'),
   routes: {
