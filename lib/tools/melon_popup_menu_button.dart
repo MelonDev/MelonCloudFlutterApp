@@ -106,9 +106,9 @@ class _MelonPopupMenuButtonState extends State<MelonPopupMenuButton>
   }
 
   Widget _outsideArea() {
-    return PortalEntry(
+    return PortalTarget(
       visible: _isOpened,
-      portal: GestureDetector(
+      portalFollower: GestureDetector(
         onTapDown: (_) => _close(),
       ),
       child: Material(
@@ -119,13 +119,15 @@ class _MelonPopupMenuButtonState extends State<MelonPopupMenuButton>
   }
 
   Widget _portalArea() {
-    return PortalEntry(
+    return PortalTarget(
       visible: _isOpened,
-      childAnchor: widget.alignment ?? Alignment.bottomRight,
-      portalAnchor: widget.alignment != null
-          ? _portalAnchor(widget.alignment!)
-          : Alignment(1.00, -1.15),
-      portal: AnimatedBuilder(
+      anchor: Aligned(
+        follower: widget.alignment != null
+            ? _portalAnchor(widget.alignment!)
+            : const Alignment(1.00, -1.15),
+        target: widget.alignment ?? Alignment.bottomRight,
+      ),
+      portalFollower: AnimatedBuilder(
         animation: _transformAnimation,
         builder: (context, child) {
           return Transform(

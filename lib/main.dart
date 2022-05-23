@@ -120,7 +120,7 @@ class _MyAppState extends State<MyApp> {
       if (Platform.isAndroid) {
         await FlutterDisplayMode.setHighRefreshRate();
         Brightness brightness =
-            SchedulerBinding.instance!.window.platformBrightness;
+            SchedulerBinding.instance.window.platformBrightness;
         _brightness = brightness;
         AdaptiveThemeMode? savedThemeMode = await AdaptiveTheme.getThemeMode();
         if (savedThemeMode != null) {
