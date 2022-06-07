@@ -21,7 +21,7 @@ class ProfileCubit extends Cubit<ProfileBaseState> {
       String? command}) async {
     emit(ProfileLoadingState(previousState: previousState));
 
-    Map<String, String> targets = {
+    Map<String, String>? targets = {
       "quality": "ORIG",
       "me_like": "true",
       "limit": "150",
@@ -30,50 +30,62 @@ class ProfileCubit extends Cubit<ProfileBaseState> {
       "type": "ALL"
     };
 
+
     if (command != null && previousState != null) {
       if (command == "NEXT" && previousState.nextPage != null) {
         targets['page'] = previousState.nextPage.toString();
+      }else {
+        targets = null;
       }
     } else {
       targets['with_hashtags'] = "true";
     }
-    var params = _params(targets: targets);
 
-    Uri uri = Uri.https(_server, '/$_path/media/$account', params);
+    if (targets != null){
+      var params = _params(targets: targets);
 
-    HttpResponse response = await http_get(uri);
-    if (response.statusCode == 200) {
-      dynamic responseData = response.data['data'];
+      Uri uri = Uri.https(_server, '/$_path/media/$account', params);
 
-      dynamic profile = responseData['profile'];
+      HttpResponse response = await http_get(uri);
+      if (response.statusCode == 200) {
+        dynamic responseData = response.data['data'];
 
-      dynamic timestamp = response.data['timestamp'];
-      dynamic timeline = _mapTimeline(response.data['data']['media'],
-          intoTimeline: previousState?.timeline);
+        dynamic profile = responseData['profile'];
 
-      dynamic fabric = response.data['fabric'];
+        dynamic timestamp = response.data['timestamp'];
+        dynamic timeline = _mapTimeline(response.data['data']['media'],
+            intoTimeline: previousState?.timeline);
 
-      ProfileState state = ProfileState(
-        profile: profile,
-        timeline: timeline,
-        data: response.data,
-        currentPage: fabric['current_page'],
-        previousPage: fabric['previous_page'],
-        nextPage: fabric['next_page'],
-      );
+        dynamic fabric = response.data['fabric'];
 
-      if (previousState == null) {
-        dynamic responseHashtags = responseData['hashtags'];
-        List<dynamic> hashtags = (responseHashtags as List);
-        state.hashtags = hashtags;
+        ProfileState state = ProfileState(
+          profile: profile,
+          timeline: timeline,
+          data: response.data,
+          currentPage: fabric['current_page'],
+          previousPage: fabric['previous_page'],
+          nextPage: fabric['next_page'],
+        );
+
+        if (previousState == null) {
+          dynamic responseHashtags = responseData['hashtags'];
+          List<dynamic> hashtags = (responseHashtags as List);
+          state.hashtags = hashtags;
+        } else {
+          List<dynamic>? hashtags = previousState.hashtags ?? [];
+          state.hashtags = hashtags;
+        }
+        emit(state);
       } else {
-        List<dynamic>? hashtags = previousState.hashtags ?? [];
-        state.hashtags = hashtags;
+        emit(ProfileFailureState(previousState: previousState));
       }
-      emit(state);
-    } else {
-      emit(ProfileFailureState(previousState: previousState));
+    }else if(previousState != null) {
+      emit(previousState);
+    }else {
+      emit(ProfileFailureState());
     }
+
+
   }
 
   Map<String, String> _params({Map<String, String>? targets}) {
