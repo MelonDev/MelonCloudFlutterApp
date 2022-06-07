@@ -218,7 +218,7 @@ class _ImagePreviewPageState extends State<ImagePreviewPage> {
             disableGestures: false,
             controller: viewController,
             initialScale: PhotoViewComputedScale.contained * 1,
-            minScale: PhotoViewComputedScale.contained * 0.8,
+            minScale: PhotoViewComputedScale.contained * 1,
             maxScale: PhotoViewComputedScale.covered * 4,
           );
         },

@@ -221,7 +221,8 @@ class _MorePageState extends State<MorePage> {
 
   Widget _contentState(state) {
     List<dynamic> data = [];
-    List<SettingMenu> portfolioGroupWidget = updatePortfolioMenu(state);
+    //List<SettingMenu> portfolioGroupWidget = updatePortfolioMenu(state);
+    List<SettingMenu> portfolioGroupWidget = [];
 
     return SliverPadding(
       padding:
