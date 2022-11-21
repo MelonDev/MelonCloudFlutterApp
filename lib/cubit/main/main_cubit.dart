@@ -245,29 +245,7 @@ class MainCubit extends Cubit<MainState> {
   }) async {
     emit(MainMoreLoadingState(previousState: previousState));
 
-    Map<String, String> targets = {};
-    var params = _params(targets: targets);
-
-    Uri uri = Uri.https(_server, '/api/v2/crypto/portfolio', params);
-
-    HttpResponse response = await http_get(uri);
-    if (response.statusCode == 200) {
-      dynamic responseData = response.data['data'];
-      print(responseData);
-      dynamic summary = responseData['summary'];
-      Map<String, dynamic> portfolios = responseData['portfolios'];
-      Map<String, dynamic> coins = responseData['coins'];
-
-      await MelonRouter.push_async(context: context, path: '/more');
-      emit(MainMoreState(
-          summary: summary, portfolios: portfolios, coins: coins));
-    } else if (response.statusCode == 400) {
-      if (previousState != null) {
-        emit(previousState);
-      }
-    } else {
-      emit(MainMoreFailureState(previousState: previousState));
-    }
+    emit(MainMoreState());
   }
 
   Map<String, String> _params({Map<String, String>? targets}) {

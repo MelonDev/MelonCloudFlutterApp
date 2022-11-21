@@ -176,36 +176,38 @@ class _MorePageState extends State<MorePage> {
       state = fromState.previousState;
     }
     if (state != null) {
-      Map<String, dynamic> portfolios = state.portfolios;
-      if (portfolios.isNotEmpty) {}
+      Map<String, dynamic>? portfolios = state.portfolios;
 
       dynamic summary = state.summary;
-      Map<String, dynamic> coins = state.coins;
-      if (coins.isNotEmpty && summary.isNotEmpty) {
-        results.add(
-          SettingMenuHeader(title: "พอร์ตการลงทุน"),
-        );
+      Map<String, dynamic>? coins = state.coins;
+      if (coins != null && summary != null) {
+        if (coins.isNotEmpty && summary.isNotEmpty) {
+          results.add(
+            SettingMenuHeader(title: "พอร์ตการลงทุน"),
+          );
 
-        results.add(SettingSummaryCoinMenuItem(
-            title: "",
-            value: state,
-            icon: null,
-            group: true,
-            topOfGroup: true,
-            bottomOfGroup: coins.isEmpty));
-
-        int coinCount = 0;
-        coins.forEach((k, v) {
-          results.add(SettingCoinMenuItem(
-              title: k,
-              value: v,
+          results.add(SettingSummaryCoinMenuItem(
+              title: "",
+              value: state,
               icon: null,
               group: true,
-              topOfGroup: false,
-              bottomOfGroup: coinCount == coins.length - 1));
-          coinCount += 1;
-        });
+              topOfGroup: true,
+              bottomOfGroup: coins.isEmpty));
+
+          int coinCount = 0;
+          coins.forEach((k, v) {
+            results.add(SettingCoinMenuItem(
+                title: k,
+                value: v,
+                icon: null,
+                group: true,
+                topOfGroup: false,
+                bottomOfGroup: coinCount == coins.length - 1));
+            coinCount += 1;
+          });
+        }
       }
+
     }
 
     return results;

@@ -2,11 +2,10 @@ part of 'main_cubit.dart';
 
 class MainMoreState extends MainState {
   dynamic summary;
-  Map<String, dynamic> portfolios;
-  Map<String, dynamic> coins;
+  Map<String, dynamic>? portfolios;
+  Map<String, dynamic>? coins;
 
-  MainMoreState(
-      {required this.summary, required this.portfolios, required this.coins});
+  MainMoreState({this.summary, this.portfolios, this.coins});
 }
 
 class MainMoreFailureState extends MainState {
