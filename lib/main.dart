@@ -38,51 +38,55 @@ import 'cubit/book_library/book_library_cubit.dart';
 import 'cubit/route/route_cubit.dart';
 
 
-CupertinoPage melonCupertinoPage({Widget? child}){
-  return CupertinoPage(child: Container(color:Colors.white,child:child));
+CupertinoPage melonCupertinoPage(BuildContext context,{Widget? child}){
+  MelonThemeData _theme = MelonTheme.of(context);
+
+  return CupertinoPage(child: Container(color:_theme.backgroundColor(),child:child));
 }
 
-final routes = RouteMap(
-  onUnknownRoute: (route) => const Redirect('/'),
-  routes: {
-    '/': (route) => CupertinoTabPage(
-          child: const HomePage(),
-          paths: MelonRouter.tabsRoute,
-        ),
-    '/home': (route) {
-      return melonCupertinoPage(child: GalleryPage());
+RouteMap getRouteMap(BuildContext context){
+  return RouteMap(
+    onUnknownRoute: (route) => const Redirect('/'),
+    routes: {
+      '/': (route) => CupertinoTabPage(
+        child: const HomePage(),
+        paths: MelonRouter.tabsRoute,
+      ),
+      '/home': (route) {
+        return melonCupertinoPage(context,child: GalleryPage());
+      },
+      '/events': (route) {
+        return melonCupertinoPage(context,child: const EventPage());
+      },
+      '/tags': (route) => melonCupertinoPage(context,child: const HashtagsPage()),
+      '/books': (route) => melonCupertinoPage(context,child: const BooksLibraryPage()),
+      '/more': (route) => melonCupertinoPage(context,child: const MorePage()),
+      '/error': (route) => melonCupertinoPage(context,child: ErrorPage(callback: () {})),
+      '/book/:id': (route) => melonCupertinoPage(context,
+          child: BookPage(
+            bookid: route.pathParameters['id']!,
+          )),
+      '/tweets/:id': (route) => melonCupertinoPage(context,
+          child: TweetPage(
+            tweetid: route.pathParameters['id']!,
+          )),
+      '/peoples': (route) => melonCupertinoPage(context,child: const PeoplesPage()),
+      '/profile/:id': (route) => melonCupertinoPage(context,
+          child: ProfilePage(
+            account: route.pathParameters['id']!,
+          )),
+      '/preview': (route) => melonCupertinoPage(context,
+          child: ImagePreviewPage(
+            photos: route.queryParameters['photos']!,
+            position: route.queryParameters['position']!,
+          )),
+      '/hashtags/:name': (route) => melonCupertinoPage(context,
+          child: HashtagPreviewPage(
+            name: route.pathParameters['name']!,
+          )),
     },
-    '/events': (route) {
-      return melonCupertinoPage(child: const EventPage());
-    },
-    '/tags': (route) => melonCupertinoPage(child: const HashtagsPage()),
-    '/books': (route) => melonCupertinoPage(child: const BooksLibraryPage()),
-    '/more': (route) => melonCupertinoPage(child: const MorePage()),
-    '/error': (route) => melonCupertinoPage(child: ErrorPage(callback: () {})),
-    '/book/:id': (route) => melonCupertinoPage(
-            child: BookPage(
-          bookid: route.pathParameters['id']!,
-        )),
-    '/tweets/:id': (route) => melonCupertinoPage(
-            child: TweetPage(
-          tweetid: route.pathParameters['id']!,
-        )),
-    '/peoples': (route) => melonCupertinoPage(child: const PeoplesPage()),
-    '/profile/:id': (route) => melonCupertinoPage(
-            child: ProfilePage(
-          account: route.pathParameters['id']!,
-        )),
-    '/preview': (route) => melonCupertinoPage(
-            child: ImagePreviewPage(
-          photos: route.queryParameters['photos']!,
-          position: route.queryParameters['position']!,
-        )),
-    '/hashtags/:name': (route) => melonCupertinoPage(
-            child: HashtagPreviewPage(
-          name: route.pathParameters['name']!,
-        )),
-  },
-);
+  );
+}
 
 
 Future main() async {
@@ -204,7 +208,7 @@ class _MyAppState extends State<MyApp> {
               debugShowCheckedModeBanner: false,
               routeInformationParser: const RoutemasterParser(),
               routerDelegate: RoutemasterDelegate(
-                routesBuilder: (context) => routes,
+                routesBuilder: (context) => getRouteMap(context),
               ),
               theme: theme,
             );

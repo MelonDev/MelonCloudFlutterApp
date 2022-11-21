@@ -8,7 +8,7 @@ import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meta/meta.dart';
 import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
 
-import '../../extensions/http_extension.dart';
+import 'package:meloncloud_flutter_app/extensions/http_extension.dart';
 
 part 'main_state.dart';
 
@@ -23,7 +23,7 @@ part 'main_books_state.dart';
 part 'main_more_state.dart';
 
 class MainCubit extends Cubit<MainState> {
-  final String _path = "api/v3/twitter";
+  final String _path = "v1/meloncloud/twitter";
   final String _server = AppEnvironment.server;
   final String _token = AppEnvironment.token;
 
@@ -84,7 +84,7 @@ class MainCubit extends Cubit<MainState> {
       String? command}) async {
     emit(MainEventLoadingState(previousState: previousState));
 
-    Map<String, String> targets = {
+    Map<String, String>? targets = {
       "quality": "ORIG",
       "type": "ALL",
       "hashtag": "FursuitFriday",
@@ -95,30 +95,39 @@ class MainCubit extends Cubit<MainState> {
     if (command != null && previousState != null) {
       if (command == "NEXT" && previousState.nextPage != null) {
         targets['page'] = previousState.nextPage.toString();
+      }else {
+        targets = null;
       }
     }
-    var params = _params(targets: targets);
 
-    Uri uri = Uri.https(_server, '/$_path/media', params);
+    if(targets != null) {
+      var params = _params(targets: targets);
 
-    HttpResponse response = await http_get(uri);
-    if (response.statusCode == 200) {
-      dynamic timestamp = response.data['timestamp'];
-      dynamic timeline = _mapTimeline(response.data['data'],
-          intoTimeline: previousState?.timeline);
-      dynamic fabric = response.data['fabric'];
+      Uri uri = Uri.https(_server, '/$_path/media', params);
 
-      MainEventState state = MainEventState(
-        timeline: timeline,
-        data: response.data,
-        currentPage: fabric['current_page'],
-        previousPage: fabric['previous_page'],
-        nextPage: fabric['next_page'],
-      );
-      await MelonRouter.push_async(context: context, path: '/events');
-      emit(state);
-    } else {
-      emit(MainEventFailureState(previousState: previousState));
+      HttpResponse response = await http_get(uri);
+      if (response.statusCode == 200) {
+        dynamic timestamp = response.data['timestamp'];
+        dynamic timeline = _mapTimeline(response.data['data'],
+            intoTimeline: previousState?.timeline);
+        dynamic fabric = response.data['fabric'];
+
+        MainEventState state = MainEventState(
+          timeline: timeline,
+          data: response.data,
+          currentPage: fabric['current_page'],
+          previousPage: fabric['previous_page'],
+          nextPage: fabric['next_page'],
+        );
+        await MelonRouter.push_async(context: context, path: '/events');
+        emit(state);
+      } else {
+        emit(MainEventFailureState(previousState: previousState));
+      }
+    }else if(previousState != null) {
+      emit(previousState);
+    }else {
+      emit(MainEventFailureState());
     }
   }
 
@@ -129,7 +138,10 @@ class MainCubit extends Cubit<MainState> {
       String? command}) async {
     emit(MainHashtagLoadingState(previousState: previousState));
 
-    query ??= "ALL";
+    query ??= "WEEK";
+
+    print(query);
+    print("A1");
 
     Map<String, String> targets = {
       "query": query,
@@ -198,7 +210,8 @@ class MainCubit extends Cubit<MainState> {
 
     var params = _params(targets: targets);
 
-    Uri uri = Uri.https(_server, '/api/v2/meloncloud-book/bypass', params);
+    Uri uri = Uri.https(_server, '/v1/meloncloud/bookshelf/bypass', params);
+    print(uri);
 
     HttpResponse response = await http_get(uri);
     if (response.statusCode == 200) {
