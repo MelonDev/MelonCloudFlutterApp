@@ -8,7 +8,7 @@ import 'package:meloncloud_flutter_app/tools/MelonRouter.dart';
 import 'package:meta/meta.dart';
 import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
 
-import '../../extensions/http_extension.dart';
+import 'package:meloncloud_flutter_app/extensions/http_extension.dart';
 
 part 'main_state.dart';
 
@@ -23,7 +23,7 @@ part 'main_books_state.dart';
 part 'main_more_state.dart';
 
 class MainCubit extends Cubit<MainState> {
-  final String _path = "api/v3/twitter";
+  final String _path = "v1/meloncloud/twitter";
   final String _server = AppEnvironment.server;
   final String _token = AppEnvironment.token;
 
@@ -140,6 +140,9 @@ class MainCubit extends Cubit<MainState> {
 
     query ??= "WEEK";
 
+    print(query);
+    print("A1");
+
     Map<String, String> targets = {
       "query": query,
       "deleted": "false",
@@ -207,7 +210,8 @@ class MainCubit extends Cubit<MainState> {
 
     var params = _params(targets: targets);
 
-    Uri uri = Uri.https(_server, '/api/v2/meloncloud-book/bypass', params);
+    Uri uri = Uri.https(_server, '/v1/meloncloud/bookshelf/bypass', params);
+    print(uri);
 
     HttpResponse response = await http_get(uri);
     if (response.statusCode == 200) {

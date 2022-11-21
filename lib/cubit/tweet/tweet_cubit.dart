@@ -10,7 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 part 'tweet_state.dart';
 
 class TweetCubit extends Cubit<TweetBaseState> {
-  final String _path = "api/v3/twitter";
+  final String _path = "v1/meloncloud/twitter";
   final String _server = AppEnvironment.server;
   final String _token = AppEnvironment.token;
 

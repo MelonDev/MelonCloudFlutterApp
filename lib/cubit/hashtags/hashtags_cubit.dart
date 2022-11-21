@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 part 'hashtags_state.dart';
 
 class HashtagsCubit extends Cubit<HashtagsBaseState> {
-  final String _path = "api/v3/twitter";
+  final String _path = "v1/meloncloud/twitter";
   final String _server = AppEnvironment.server;
   final String _token = AppEnvironment.token;
 

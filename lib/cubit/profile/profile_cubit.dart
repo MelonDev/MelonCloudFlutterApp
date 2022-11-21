@@ -9,7 +9,7 @@ import 'package:meloncloud_flutter_app/extensions/kotlin_scope_functions.dart';
 part 'profile_state.dart';
 
 class ProfileCubit extends Cubit<ProfileBaseState> {
-  final String _path = "api/v3/twitter";
+  final String _path = "v1/meloncloud/twitter";
   final String _server = AppEnvironment.server;
   final String _token = AppEnvironment.token;
 

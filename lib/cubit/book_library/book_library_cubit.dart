@@ -11,7 +11,7 @@ part 'book_library_state.dart';
 class BookLibraryCubit extends Cubit<BookLibraryBaseState> {
   BookLibraryCubit() : super(BookLibraryInitialState());
 
-  final String _path = "api/v2/meloncloud-book";
+  final String _path = "v1/meloncloud/bookshelf";
   final String _server = AppEnvironment.server;
   final String _token = AppEnvironment.bookApiKey;
 
@@ -25,7 +25,7 @@ class BookLibraryCubit extends Cubit<BookLibraryBaseState> {
 
     var params = {'id': bookid};
 
-    Uri uri = Uri.https(_server, '/api/v2/meloncloud-book/bypass', params);
+    Uri uri = Uri.https(_server, '/v1/meloncloud/bookshelf/bypass', params);
 
     HttpResponse response = await http_get(uri);
     if (response.statusCode == 200) {

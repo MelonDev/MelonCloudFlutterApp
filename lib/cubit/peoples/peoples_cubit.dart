@@ -11,7 +11,7 @@ part 'peoples_state.dart';
 
 class PeoplesCubit extends Cubit<PeoplesBaseState> {
   PeoplesCubit() : super(PeoplesInitialState());
-  final String _path = "api/v3/twitter";
+  final String _path = "v1/meloncloud/twitter";
   final String _server = AppEnvironment.server;
   final String _token = AppEnvironment.token;
 
